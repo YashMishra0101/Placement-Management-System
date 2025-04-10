@@ -1,16 +1,16 @@
-
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, User, Building2, ShieldCheck, Lock, Mail } from "lucide-react";
+import { ArrowLeft, User, Building2, ShieldCheck, Lock, Mail, Loader2 } from "lucide-react";
 import RoleSelector from "@/components/auth/RoleSelector";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/landing/Footer";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 type Role = "student" | "recruiter" | "admin";
 
@@ -20,8 +20,10 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { signIn, userRole } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedRole) {
       toast({
@@ -33,34 +35,12 @@ const Login = () => {
     }
 
     setIsLoading(true);
-
-    // Hard-coded admin credentials check
-    if (selectedRole === "admin") {
-      if (email === "yashrkm@gmail.com" && password === "825TGBvdf@#&") {
-        // Successful admin login
-        toast({
-          title: "Success",
-          description: "Admin login successful. Redirecting to dashboard...",
-        });
-        setTimeout(() => {
-          // Redirect logic would go here
-          setIsLoading(false);
-        }, 1500);
-      } else {
-        // Failed admin login
-        toast({
-          title: "Error",
-          description: "Invalid admin credentials.",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-      }
-    } else {
-      // Student or recruiter login logic would integrate with Supabase here
-      toast({
-        title: "Info",
-        description: `${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)} login would connect to Supabase in the full implementation.`,
-      });
+    
+    try {
+      await signIn(email, password);
+    } catch (error) {
+      console.error("Login error:", error);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -202,8 +182,14 @@ const Login = () => {
                           className="w-full relative overflow-hidden group"
                           disabled={isLoading}
                         >
-                          <span className="absolute inset-0 w-full h-full transition-all duration-300 ease-out transform translate-x-full group-hover:translate-x-0 bg-gradient-to-r from-primary to-secondary"></span>
-                          <span className="relative">{isLoading ? "Logging in..." : "Login"}</span>
+                          {isLoading ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Logging in...
+                            </>
+                          ) : (
+                            "Login"
+                          )}
                         </Button>
                       </>
                     )}

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 // Create a schema for form validation
 const studentFormSchema = z.object({
@@ -67,6 +68,7 @@ interface SignupStudentProps {
 
 export const SignupStudent = ({ onSubmit }: SignupStudentProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const { signUp } = useAuth();
 
   const form = useForm<z.infer<typeof studentFormSchema>>({
     resolver: zodResolver(studentFormSchema),
@@ -86,13 +88,22 @@ export const SignupStudent = ({ onSubmit }: SignupStudentProps) => {
     },
   });
 
-  const handleSubmit = (data: z.infer<typeof studentFormSchema>) => {
+  const handleSubmit = async (data: z.infer<typeof studentFormSchema>) => {
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    
+    try {
+      await signUp(data.email, data.password, {
+        ...data,
+        role: "student",
+      });
+      
+      // Call the parent onSubmit callback
       onSubmit(data);
+    } catch (error) {
+      console.error("Error during signup:", error);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const branches = [

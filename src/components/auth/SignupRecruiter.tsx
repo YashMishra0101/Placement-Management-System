@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Loader2, Upload } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 // Create a schema for form validation
 const recruiterFormSchema = z.object({
@@ -23,8 +23,6 @@ const recruiterFormSchema = z.object({
   companyInfo: z
     .string()
     .min(50, "Company information must be at least 50 characters"),
-  // In a real implementation, we would validate file upload
-  // Here we're just using a placeholder
   logo: z.string().optional(),
 });
 
@@ -35,6 +33,7 @@ interface SignupRecruiterProps {
 export const SignupRecruiter = ({ onSubmit }: SignupRecruiterProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const { signUp } = useAuth();
 
   const form = useForm<z.infer<typeof recruiterFormSchema>>({
     resolver: zodResolver(recruiterFormSchema),
@@ -59,13 +58,24 @@ export const SignupRecruiter = ({ onSubmit }: SignupRecruiterProps) => {
     }
   };
 
-  const handleSubmit = (data: z.infer<typeof recruiterFormSchema>) => {
+  const handleSubmit = async (data: z.infer<typeof recruiterFormSchema>) => {
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    
+    try {
+      await signUp(data.email, data.password, {
+        firstName: data.companyName,
+        company_name: data.companyName,
+        company_info: data.companyInfo,
+        logo: data.logo,
+        role: "recruiter",
+      });
+      
       onSubmit(data);
+    } catch (error) {
+      console.error("Error during signup:", error);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (
