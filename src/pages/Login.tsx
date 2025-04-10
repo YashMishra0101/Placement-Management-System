@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/landing/Footer";
@@ -9,8 +9,18 @@ import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
   const [selectedRole, setSelectedRole] = useState<"student" | "recruiter" | "admin" | null>(null);
-  const { userRole } = useAuth();
   const navigate = useNavigate();
+  const { userRole } = useAuth();
+
+  useEffect(() => {
+    // If user is already logged in and has admin role, redirect to admin dashboard
+    if (userRole === "admin") {
+      navigate("/admin/dashboard");
+    } else if (userRole) {
+      // If user is already logged in with any other role, redirect to home
+      navigate("/");
+    }
+  }, [userRole, navigate]);
 
   const handleRoleSelect = (role: "student" | "recruiter" | "admin" | null) => {
     setSelectedRole(role);

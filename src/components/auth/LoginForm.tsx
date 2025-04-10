@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -39,6 +38,7 @@ const LoginForm = ({ onLoginSuccess }: LoginFormProps) => {
     setIsLoading(true);
     
     try {
+      console.log("Attempting to sign in with:", email);
       await signIn(email, password);
       if (onLoginSuccess) onLoginSuccess();
     } catch (error) {

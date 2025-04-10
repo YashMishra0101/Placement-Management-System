@@ -27,12 +27,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("AuthProvider initialized");
+    
+    // IMPORTANT: Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
+        console.log("Auth state changed:", _event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
+          // Use setTimeout to prevent deadlocks in Supabase auth
           setTimeout(() => {
             fetchUserRole(session.user.id);
           }, 0);
@@ -42,7 +47,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     );
 
+    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("Retrieved session:", session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
       
@@ -57,6 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchUserRole = async (userId: string) => {
     try {
+      console.log("Fetching user role for:", userId);
       // Using any to bypass type checking since we can't modify types.ts
       const { data, error } = await supabase
         .from('profiles')
