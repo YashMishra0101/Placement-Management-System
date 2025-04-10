@@ -2,12 +2,30 @@
 import { useEffect, useState } from "react";
 
 const companies = [
-  { name: "Infosys", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Infosys_logo.svg/2560px-Infosys_logo.svg.png" },
-  { name: "TCS", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Tata_Consultancy_Services_Logo.svg/1200px-Tata_Consultancy_Services_Logo.svg.png" },
-  { name: "Wipro", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Wipro_Primary_Logo_Color_RGB.svg/1200px-Wipro_Primary_Logo_Color_RGB.svg.png" },
-  { name: "Tech Mahindra", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Tech_Mahindra_Logo.svg/1200px-Tech_Mahindra_Logo.svg.png" },
-  { name: "HCL", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/HCLTechnologies_logo.svg/1200px-HCLTechnologies_logo.svg.png" },
-  { name: "Cognizant", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Cognizant_logo_2022.svg/1200px-Cognizant_logo_2022.svg.png" },
+  { 
+    name: "Infosys", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Infosys_logo.svg/2560px-Infosys_logo.svg.png" 
+  },
+  { 
+    name: "TCS", 
+    logo: "https://www.tcs.com/content/dam/global-tcs/en/images/logo/tata-consultancy-services-logo-black-white.png" 
+  },
+  { 
+    name: "Wipro", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Wipro_Primary_Logo_Color_RGB.svg/1200px-Wipro_Primary_Logo_Color_RGB.svg.png" 
+  },
+  { 
+    name: "Tech Mahindra", 
+    logo: "https://www.techmahindra.com/wp-content/uploads/2022/07/Tech-Mahindra-Logo.png" 
+  },
+  { 
+    name: "HCL", 
+    logo: "https://www.hcltech.com/sites/default/files/images/logo.png" 
+  },
+  { 
+    name: "Cognizant", 
+    logo: "https://www.cognizant.com/content/dam/cognizant_foundation/Dotcomimage/cognizant-logo-color-1.png" 
+  },
 ];
 
 const CompaniesSection = () => {
