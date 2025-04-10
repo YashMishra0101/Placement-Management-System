@@ -31,6 +31,7 @@ const AdminDashboard = () => {
     // Fetch pending users
     const fetchPendingUsers = async () => {
       try {
+        // Using any to bypass type checking
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
@@ -54,6 +55,7 @@ const AdminDashboard = () => {
 
   const handleApprove = async (userId: string) => {
     try {
+      // Using any to bypass type checking
       const { error } = await supabase
         .from('profiles')
         .update({ approval_status: 'approved' })
@@ -73,6 +75,7 @@ const AdminDashboard = () => {
 
   const handleReject = async (userId: string) => {
     try {
+      // Using any to bypass type checking
       const { error } = await supabase
         .from('profiles')
         .update({ approval_status: 'rejected' })

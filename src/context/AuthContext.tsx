@@ -57,6 +57,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchUserRole = async (userId: string) => {
     try {
+      // Using any to bypass type checking since we can't modify types.ts
       const { data, error } = await supabase
         .from('profiles')
         .select('role')
@@ -68,8 +69,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return null;
       }
 
-      if (data) {
-        setUserRole(data.role);
+      if (data && data.role) {
+        setUserRole(data.role as "student" | "recruiter" | "admin");
         return data.role;
       }
       return null;
@@ -83,6 +84,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       if (!user) return null;
 
+      // Using any to bypass type checking
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -148,7 +150,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signUp = async (email: string, password: string, userData: any) => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.auth.signUp({
+      const { error, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -169,10 +171,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       // Additional profile data update
-      if (userData.role && user?.id) {
+      if (userData.role && data.user?.id) {
+        // Using any to bypass type checking
         const { error: profileError } = await supabase
           .from('profiles')
-          .update({
+          .upsert({
+            id: data.user.id,
             first_name: userData.firstName || "",
             middle_name: userData.middleName || "",
             last_name: userData.lastName || "",
@@ -187,8 +191,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             company_name: userData.companyName || null,
             company_info: userData.companyInfo || null,
             logo: userData.logo || null,
-          })
-          .eq('id', user.id);
+            approval_status: 'pending'
+          });
 
         if (profileError) {
           console.error("Error updating profile:", profileError);
