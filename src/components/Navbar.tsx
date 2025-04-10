@@ -13,6 +13,7 @@ const Navbar = () => {
     { name: "Home", path: "/" },
     { name: "About", path: "/#about" },
     { name: "Features", path: "/#features" },
+    { name: "FAQs", path: "/faqs" },
     { name: "Contact", path: "/#contact" },
   ];
 
@@ -55,9 +56,9 @@ const Navbar = () => {
                 <a
                   key={link.name}
                   href={link.path}
-                  className={`px-3 py-2 text-sm font-medium rounded-md hover:text-primary transition-colors ${
+                  className={`relative px-3 py-2 text-sm font-medium rounded-md hover:text-primary transition-all ${
                     location.pathname === link.path
-                      ? "text-primary"
+                      ? "text-primary after:content-[''] after:absolute after:w-full after:h-0.5 after:bg-primary after:left-0 after:bottom-0"
                       : "text-gray-700"
                   }`}
                 >
@@ -67,12 +68,12 @@ const Navbar = () => {
             </div>
             <div className="ml-4 flex items-center md:ml-6">
               <Link to="/login">
-                <Button variant="outline" className="mr-2">
+                <Button variant="outline" className="mr-2 hover:bg-primary/10 hover:text-primary transition-colors">
                   Login
                 </Button>
               </Link>
               <Link to="/signup">
-                <Button>Sign Up</Button>
+                <Button className="shadow-md hover:shadow-lg transition-shadow">Sign Up</Button>
               </Link>
             </div>
           </div>
