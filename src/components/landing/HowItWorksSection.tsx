@@ -43,66 +43,52 @@ const steps = [
 
 const HowItWorksSection = () => {
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+    <section className="py-24 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+        <div className="text-center max-w-3xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             How It Works
           </h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mt-4 mb-4"></div>
-          <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
+          <div className="w-24 h-1.5 bg-gradient-to-r from-primary to-secondary mx-auto mb-6"></div>
+          <p className="text-xl text-gray-600">
             Our simple 4-step process makes placement management easy for
             everyone involved.
           </p>
         </div>
 
-        <div className="mt-16 relative">
-          {/* Line connecting steps */}
-          <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary to-secondary transform -translate-x-1/2"></div>
-
+        <div className="mt-20">
           {steps.map((step, index) => (
             <div
               key={index}
-              className={`relative mb-16 lg:mb-24 ${
-                index % 2 === 0 ? "lg:text-right" : "lg:text-left"
-              }`}
+              className={`mb-16 lg:mb-24 ${index % 2 !== 0 ? "lg:flex-row-reverse" : ""}`}
             >
-              <div
-                className={`lg:flex items-center ${
-                  index % 2 === 0
-                    ? "lg:flex-row-reverse lg:justify-start"
-                    : "lg:flex-row lg:justify-end"
-                }`}
-              >
-                <div
-                  className={`flex flex-col items-center mb-6 lg:mb-0 ${
-                    index % 2 === 0 ? "lg:ml-8" : "lg:mr-8"
-                  }`}
-                >
-                  <div
-                    className={`z-10 flex items-center justify-center w-16 h-16 rounded-full ${step.color} shadow-lg`}
-                  >
-                    <step.icon className="h-8 w-8" />
-                  </div>
-                  {index !== steps.length - 1 && (
-                    <div className="lg:hidden w-0.5 h-12 bg-gradient-to-b from-primary/50 to-secondary/50 mt-4"></div>
-                  )}
-                </div>
-
-                <div className="lg:w-5/12">
-                  <div className="p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 group">
-                    <div className="mb-4 overflow-hidden rounded-lg">
-                      <img 
-                        src={step.image} 
-                        alt={step.title}
-                        className="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500" 
-                      />
+              <div className="lg:flex items-center gap-12">
+                <div className="lg:w-1/2 mb-8 lg:mb-0">
+                  <div className="relative">
+                    <div className="bg-white p-3 rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                      <div className="relative overflow-hidden rounded-xl aspect-video">
+                        <img 
+                          src={step.image} 
+                          alt={step.title}
+                          className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+                        />
+                      </div>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900">
-                      {step.title}
-                    </h3>
-                    <p className="mt-2 text-gray-600">{step.description}</p>
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-secondary transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                    <div className={`absolute -top-6 -right-6 md:top-4 md:-right-6 w-16 h-16 rounded-full flex items-center justify-center ${step.color} shadow-lg z-10`}>
+                      <span className="text-2xl font-bold">{index + 1}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="lg:w-1/2">
+                  <div className="p-6 md:p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    <div className="flex items-center mb-4">
+                      <div className={`w-12 h-12 rounded-full ${step.color} flex items-center justify-center mr-4`}>
+                        <step.icon className="h-6 w-6" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-900">{step.title}</h3>
+                    </div>
+                    <p className="text-lg text-gray-600">{step.description}</p>
                   </div>
                 </div>
               </div>

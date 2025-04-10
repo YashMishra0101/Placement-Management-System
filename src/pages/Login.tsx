@@ -36,25 +36,23 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white">
       <Navbar />
-      <div className="flex-1 flex items-center justify-center px-4 py-16">
-        <div className="w-full max-w-4xl">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center">
-            {/* Left side - illustration */}
-            <div className="lg:col-span-2 hidden lg:block">
-              <div className="relative">
-                <div className="absolute -z-10 -top-10 -left-10 w-40 h-40 bg-primary/10 rounded-full blur-xl animate-pulse"></div>
-                <div className="absolute -z-10 bottom-10 right-10 w-60 h-60 bg-secondary/10 rounded-full blur-xl animate-pulse"></div>
-                
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-5xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center bg-white rounded-2xl shadow-2xl overflow-hidden">
+            {/* Left side - illustration with gradient background */}
+            <div className="hidden lg:block h-full bg-gradient-to-br from-primary/90 to-secondary/90 p-10 text-white">
+              <div className="h-full flex flex-col justify-center">
                 <RoleIllustration selectedRole={selectedRole} />
               </div>
             </div>
 
             {/* Right side - login form */}
-            <div className="lg:col-span-3">
+            <div className="p-6 md:p-8">
               <LoginForm 
                 onLoginSuccess={handleLoginSuccess} 
+                onRoleSelect={handleRoleSelect}
               />
             </div>
           </div>
