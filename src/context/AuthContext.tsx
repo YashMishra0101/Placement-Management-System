@@ -68,8 +68,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return null;
       }
 
-      setUserRole(data.role);
-      return data.role;
+      if (data) {
+        setUserRole(data.role);
+        return data.role;
+      }
+      return null;
     } catch (error) {
       console.error('Error in fetchUserRole:', error);
       return null;
@@ -166,7 +169,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       // Additional profile data update
-      if (userData.role) {
+      if (userData.role && user?.id) {
         const { error: profileError } = await supabase
           .from('profiles')
           .update({
@@ -185,7 +188,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             company_info: userData.companyInfo || null,
             logo: userData.logo || null,
           })
-          .eq('id', user?.id);
+          .eq('id', user.id);
 
         if (profileError) {
           console.error("Error updating profile:", profileError);

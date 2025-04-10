@@ -6,10 +6,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
+type PendingUser = {
+  id: string;
+  first_name?: string;
+  last_name?: string;
+  company_name?: string;
+  role: "student" | "recruiter" | "admin";
+  branch?: string;
+  cgpa?: number;
+};
+
 const AdminDashboard = () => {
   const { user, userRole } = useAuth();
   const navigate = useNavigate();
-  const [pendingUsers, setPendingUsers] = useState<any[]>([]);
+  const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -22,9 +32,9 @@ const AdminDashboard = () => {
     const fetchPendingUsers = async () => {
       try {
         const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("approval_status", "pending");
+          .from('profiles')
+          .select('*')
+          .eq('approval_status', 'pending');
 
         if (error) {
           console.error("Error fetching pending users:", error);
@@ -45,9 +55,9 @@ const AdminDashboard = () => {
   const handleApprove = async (userId: string) => {
     try {
       const { error } = await supabase
-        .from("profiles")
-        .update({ approval_status: "approved" })
-        .eq("id", userId);
+        .from('profiles')
+        .update({ approval_status: 'approved' })
+        .eq('id', userId);
 
       if (error) {
         console.error("Error approving user:", error);
@@ -64,9 +74,9 @@ const AdminDashboard = () => {
   const handleReject = async (userId: string) => {
     try {
       const { error } = await supabase
-        .from("profiles")
-        .update({ approval_status: "rejected" })
-        .eq("id", userId);
+        .from('profiles')
+        .update({ approval_status: 'rejected' })
+        .eq('id', userId);
 
       if (error) {
         console.error("Error rejecting user:", error);
