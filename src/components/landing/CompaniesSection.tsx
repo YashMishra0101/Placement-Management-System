@@ -1,15 +1,34 @@
 
 import { useEffect, useState } from "react";
 
-// Updated company logos with more reliable URLs
 const companies = [
-  { name: "Infosys", logo: "https://logos-world.net/wp-content/uploads/2020/08/Infosys-Logo.png" },
-  { name: "TCS", logo: "https://logos-world.net/wp-content/uploads/2020/06/Tata-Consultancy-Services-TCS-Logo.png" },
-  { name: "Wipro", logo: "https://logos-world.net/wp-content/uploads/2020/07/Wipro-Logo.png" },
-  { name: "Tech Mahindra", logo: "https://logos-world.net/wp-content/uploads/2020/11/Tech-Mahindra-Logo.png" },
-  { name: "HCL", logo: "https://logos-world.net/wp-content/uploads/2020/11/HCL-Technologies-Logo.png" },
-  { name: "Cognizant", logo: "https://logos-world.net/wp-content/uploads/2022/07/Cognizant-Logo.png" },
+  {
+    name: "Infosys",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/9/95/Infosys_logo.svg" // Using SVG from Wikimedia for better quality! 👍
+  },
+  {
+    name: "TCS",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Tata_Consultancy_Services_Logo.svg" // SVG from Wikimedia
+  },
+  {
+    name: "Wipro",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a0/Wipro_Primary_Logo_Color_RGB.svg" // SVG from Wikimedia
+  },
+  {
+    name: "Tech Mahindra",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/8/8a/Tech_Mahindra_New_Logo.svg" // SVG from Wikimedia
+  },
+  {
+    name: "HCL",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/3/31/HCLTech_logo_SVG.svg" // SVG from Wikimedia (Note: HCL Technologies often goes by HCLTech now)
+  },
+  {
+    name: "Cognizant",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a8/Cognizant_Logo_Blue.svg" // SVG from Wikimedia
+  },
 ];
+
+console.log(companies); // You can check the updated array here! ✨
 
 const CompaniesSection = () => {
   const [animated, setAnimated] = useState(false);
