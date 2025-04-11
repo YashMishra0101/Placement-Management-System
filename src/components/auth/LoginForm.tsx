@@ -1,14 +1,20 @@
-
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // ✅ Added useNavigate
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { ArrowLeft, Loader2, Mail, Lock } from "lucide-react";
 import RoleSelector from "@/components/auth/RoleSelector";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "../../useAuth/AuthContext"; // ✅ Removed .tsx extension
 import { useToast } from "@/hooks/use-toast";
 
 type Role = "student" | "recruiter" | "admin";
@@ -23,8 +29,10 @@ const LoginForm = ({ onLoginSuccess, onRoleSelect }: LoginFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
   const { toast } = useToast();
-  const { signIn } = useAuth();
+  const { signIn, user } = useAuth(); // ✅ Added 'user' destructure
+  const navigate = useNavigate(); // ✅ Added navigate
 
   const handleRoleSelection = (role: Role | null) => {
     setSelectedRole(role);
@@ -35,6 +43,7 @@ const LoginForm = ({ onLoginSuccess, onRoleSelect }: LoginFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!selectedRole) {
       toast({
         title: "Error",
@@ -45,13 +54,23 @@ const LoginForm = ({ onLoginSuccess, onRoleSelect }: LoginFormProps) => {
     }
 
     setIsLoading(true);
-    
+
     try {
-      console.log("Attempting to sign in with:", email);
       await signIn(email, password);
-      if (onLoginSuccess) onLoginSuccess();
+
+      if (user?.role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (onLoginSuccess) {
+        onLoginSuccess();
+      }
     } catch (error) {
       console.error("Login error:", error);
+      toast({
+        title: "Login Failed",
+        description:
+          error instanceof Error ? error.message : "Invalid credentials",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +82,7 @@ const LoginForm = ({ onLoginSuccess, onRoleSelect }: LoginFormProps) => {
         <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
         <p className="mt-2 text-gray-600">Sign in to access your account</p>
       </div>
-      
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <RoleSelector
           onRoleSelect={handleRoleSelection}
@@ -139,7 +158,7 @@ const LoginForm = ({ onLoginSuccess, onRoleSelect }: LoginFormProps) => {
           </div>
         )}
       </form>
-      
+
       <div className="text-center space-y-4">
         <div className="text-sm">
           Don't have an account?{" "}

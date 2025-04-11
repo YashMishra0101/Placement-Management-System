@@ -30,7 +30,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden pt-12">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="animate-float absolute top-20 right-10 w-64 h-64 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>

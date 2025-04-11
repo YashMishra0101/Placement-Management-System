@@ -1,159 +1,202 @@
-
 import { useEffect, useState } from "react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "../../useAuth/AuthContext.tsx";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, supabaseAdmin } from "../../supabase/Client.jsx";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react"; // 🛠️ You missed importing Loader2 for the spinner
 
 type PendingUser = {
   id: string;
-  first_name?: string;
-  last_name?: string;
-  company_name?: string;
-  role: "student" | "recruiter" | "admin";
-  branch?: string;
-  cgpa?: number;
+  email: string;
+  role: "student" | "recruiter";
+  raw_user_meta_data: any;
+  created_at: string;
 };
 
 const AdminDashboard = () => {
-  const { user, userRole } = useAuth();
-  const navigate = useNavigate();
-  const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, isAdmin, approveUser } = useAuth();
+  const [pendingUsers, setPendingUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Check if the user is an admin
-    if (userRole !== "admin") {
-      navigate("/login");
+    if (isAdmin) {
+      fetchPendingUsers();
     }
+  }, [isAdmin]);
 
-    // Fetch pending users
-    const fetchPendingUsers = async () => {
-      try {
-        // Using any to bypass type checking
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('approval_status', 'pending');
-
-        if (error) {
-          console.error("Error fetching pending users:", error);
-          return;
-        }
-
-        setPendingUsers(data || []);
-      } catch (error) {
-        console.error("Error:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPendingUsers();
-  }, [userRole, navigate]);
-
-  const handleApprove = async (userId: string) => {
+  const fetchPendingUsers = async () => {
     try {
-      // Using any to bypass type checking
-      const { error } = await supabase
-        .from('profiles')
-        .update({ approval_status: 'approved' })
-        .eq('id', userId);
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("pending_requests")
+        .select("*")
+        .eq("status", "pending");
 
-      if (error) {
-        console.error("Error approving user:", error);
-        return;
-      }
-
-      // Update the local state
-      setPendingUsers(pendingUsers.filter(user => user.id !== userId));
+      if (error) throw error;
+      setPendingUsers(data || []);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error fetching pending users:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch pending users",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleReject = async (userId: string) => {
+  const handleApprove = async (requestId: number, email: string) => {
     try {
-      // Using any to bypass type checking
-      const { error } = await supabase
-        .from('profiles')
-        .update({ approval_status: 'rejected' })
-        .eq('id', userId);
+      setLoading(true);
 
-      if (error) {
-        console.error("Error rejecting user:", error);
-        return;
-      }
+      // 1. Update the pending request status
+      const { error: updateError } = await supabase
+        .from("pending_requests")
+        .update({ status: "approved" })
+        .eq("id", requestId);
 
-      // Update the local state
-      setPendingUsers(pendingUsers.filter(user => user.id !== userId));
+      if (updateError) throw updateError;
+
+      // 2. Get the pending request data
+      const { data: requestData, error: requestError } = await supabase
+        .from("pending_requests")
+        .select("*")
+        .eq("id", requestId)
+        .single();
+
+      if (requestError) throw requestError;
+
+      // 3. Create the user in auth and profile tables
+      const { error: authError } = await supabaseAdmin.auth.admin.createUser({
+        email: requestData.email,
+        password: requestData.password_hash,
+        email_confirm: true,
+        user_metadata: requestData.raw_user_meta_data,
+      });
+
+      if (authError) throw authError;
+
+      // 4. Create profile
+      const { error: profileError } = await supabase.from("profiles").insert([
+        {
+          email: requestData.email,
+          role: requestData.role,
+          is_approved: true,
+          ...requestData.raw_user_meta_data,
+        },
+      ]);
+
+      if (profileError) throw profileError;
+
+      toast({
+        title: "Success",
+        description: `Approved user: ${email}`,
+        variant: "default",
+      });
+
+      // Refresh the list
+      await fetchPendingUsers();
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Approval error:", error);
+      toast({
+        title: "Error",
+        description: `Failed to approve user: ${email}`,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (isLoading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+  const handleReject = async (requestId: number, email: string) => {
+    try {
+      setLoading(true);
+      const { error } = await supabase
+        .from("pending_requests")
+        .update({ status: "rejected" })
+        .eq("id", requestId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Rejected user: ${email}`,
+        variant: "default",
+      });
+
+      await fetchPendingUsers();
+    } catch (error) {
+      console.error("Rejection error:", error);
+      toast({
+        title: "Error",
+        description: `Failed to reject user: ${email}`,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isAdmin) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-lg text-gray-600">
+          You must be an admin to access this page.
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
-      
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Welcome, Admin</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>You are logged in as an administrator.</p>
-        </CardContent>
-      </Card>
-      
+    <div className="container mx-auto px-4 py-8">
       <Card>
         <CardHeader>
-          <CardTitle>Pending Approvals</CardTitle>
+          <CardTitle>Admin Dashboard</CardTitle>
         </CardHeader>
         <CardContent>
-          {pendingUsers.length === 0 ? (
-            <p>No pending approvals.</p>
+          <h2 className="text-xl font-semibold mb-4">Pending Approvals</h2>
+
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+          ) : pendingUsers.length === 0 ? (
+            <p className="text-gray-500">No pending approvals</p>
           ) : (
             <div className="space-y-4">
-              {pendingUsers.map((pendingUser) => (
-                <div key={pendingUser.id} className="border p-4 rounded-md">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold">
-                        {pendingUser.first_name} {pendingUser.last_name || pendingUser.company_name}
-                      </h3>
-                      <p className="text-sm text-gray-600">{pendingUser.role}</p>
-                      {pendingUser.role === "student" && (
-                        <div className="mt-2 text-sm">
-                          <p>Branch: {pendingUser.branch}</p>
-                          <p>CGPA: {pendingUser.cgpa}</p>
-                        </div>
-                      )}
-                      {pendingUser.role === "recruiter" && (
-                        <div className="mt-2 text-sm">
-                          <p>Company: {pendingUser.company_name}</p>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button 
-                        size="sm" 
-                        onClick={() => handleApprove(pendingUser.id)}
-                      >
-                        Approve
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="destructive" 
-                        onClick={() => handleReject(pendingUser.id)}
-                      >
-                        Reject
-                      </Button>
-                    </div>
+              {pendingUsers.map((user) => (
+                <div
+                  key={user.id}
+                  className="border rounded-lg p-4 flex justify-between items-center"
+                >
+                  <div>
+                    <p className="font-medium">{user.email}</p>
+                    <p className="text-sm text-gray-500 capitalize">
+                      {user.role}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Registered: {new Date(user.created_at).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => handleReject(user.id, user.email)}
+                      disabled={loading}
+                    >
+                      Reject
+                    </Button>
+                    <Button
+                      onClick={() => handleApprove(user.id, user.email)}
+                      disabled={loading}
+                    >
+                      Approve
+                    </Button>
                   </div>
                 </div>
               ))}

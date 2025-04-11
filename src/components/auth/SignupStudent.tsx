@@ -1,14 +1,26 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "../../useAuth/AuthContext.tsx";
 
 // Create a schema for form validation
 const studentFormSchema = z.object({
@@ -16,13 +28,8 @@ const studentFormSchema = z.object({
   middleName: z.string().optional(),
   lastName: z.string().min(2, "Last name is required"),
   email: z.string().email("Invalid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-      "Password must include uppercase, lowercase, number and special character"
-    ),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+
   dob: z.string().refine((val) => {
     const date = new Date(val);
     const now = new Date();
@@ -30,33 +37,27 @@ const studentFormSchema = z.object({
     minAge.setFullYear(now.getFullYear() - 16); // Minimum age 16 years
     return date <= minAge;
   }, "You must be at least 16 years old"),
-  tenthPercentage: z
-    .string()
-    .refine(
-      (val) => {
-        const num = parseFloat(val);
-        return num >= 0 && num <= 100;
-      },
-      { message: "Percentage must be between 0 and 100" }
-    ),
-  twelfthPercentage: z
-    .string()
-    .refine(
-      (val) => {
-        const num = parseFloat(val);
-        return num >= 0 && num <= 100;
-      },
-      { message: "Percentage must be between 0 and 100" }
-    ),
-  cgpa: z
-    .string()
-    .refine(
-      (val) => {
-        const num = parseFloat(val);
-        return num >= 0 && num <= 10;
-      },
-      { message: "CGPA must be between 0 and 10" }
-    ),
+  tenthPercentage: z.string().refine(
+    (val) => {
+      const num = parseFloat(val);
+      return num >= 0 && num <= 100;
+    },
+    { message: "Percentage must be between 0 and 100" }
+  ),
+  twelfthPercentage: z.string().refine(
+    (val) => {
+      const num = parseFloat(val);
+      return num >= 0 && num <= 100;
+    },
+    { message: "Percentage must be between 0 and 100" }
+  ),
+  cgpa: z.string().refine(
+    (val) => {
+      const num = parseFloat(val);
+      return num >= 0 && num <= 10;
+    },
+    { message: "CGPA must be between 0 and 10" }
+  ),
   branch: z.string().min(1, "Branch is required"),
   semester: z.string().min(1, "Semester is required"),
   backlogs: z.string().min(1, "Backlogs information is required"),
@@ -90,14 +91,26 @@ export const SignupStudent = ({ onSubmit }: SignupStudentProps) => {
 
   const handleSubmit = async (data: z.infer<typeof studentFormSchema>) => {
     setIsLoading(true);
-    
+
     try {
-      await signUp(data.email, data.password, {
-        ...data,
-        role: "student",
-      });
-      
-      // Call the parent onSubmit callback
+      await signUp(
+        data.email,
+        data.password,
+        {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          middleName: data.middleName,
+          dob: data.dob,
+          tenthPercentage: data.tenthPercentage,
+          twelfthPercentage: data.twelfthPercentage,
+          cgpa: data.cgpa,
+          branch: data.branch,
+          semester: data.semester,
+          backlogs: data.backlogs,
+        },
+        "student"
+      );
+
       onSubmit(data);
     } catch (error) {
       console.error("Error during signup:", error);

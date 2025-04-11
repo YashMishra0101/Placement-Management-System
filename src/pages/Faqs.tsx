@@ -1,9 +1,10 @@
-
-import { useState } from "react";
-import { ChevronDown, ChevronUp, Search, HelpCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { ChevronDown, ChevronUp, Search, HelpCircle, ChevronRight, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/landing/Footer";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface FaqItem {
   question: string;
@@ -93,104 +94,181 @@ const FaqsPage = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
 
   const toggleFaq = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
-  const categories = ["All", ...new Set(faqData.map((faq) => faq.category))];
+  const categories = ["All", ...Array.from(new Set(faqData.map((faq) => faq.category)))];
 
   const filteredFaqs = faqData.filter((faq) => {
     const matchesSearch = faq.question.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+                          faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = activeCategory === null || activeCategory === "All" || faq.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
 
+  useEffect(() => {
+    // Reset active FAQ when search query changes
+    setActiveIndex(null);
+  }, [searchQuery, activeCategory]);
+
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 to-slate-50">
       <Navbar />
       <div className="flex-grow">
-        <div className="bg-gradient-to-r from-primary to-secondary py-20 px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl font-bold text-white mb-6">Frequently Asked Questions</h1>
-            <p className="text-white/90 text-lg mb-8">
+        {/* Hero Section */}
+        <div className="relative overflow-hidden pt-24 pb-12 md:pt-32 md:pb-20">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-violet-600 opacity-90"></div>
+          
+          {/* Background pattern */}
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNCI+PHBhdGggZD0iTTM2IDM0djZoNnYtNmgtNnptMC0zMHY2aDZ2LTZoLTZ6bTMwIDMwdjZoNnYtNmgtNnptMC0zMHY2aDZ2LTZoLTZ6bS0xNSAxNXY2aDZ2LTZoLTZ6Ii8+PC9nPjwvZz48L3N2Zz4=')] mix-blend-overlay opacity-70"></div>
+          
+          <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 relative z-10">
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-4xl md:text-5xl font-bold text-white mb-6"
+            >
+              Frequently Asked Questions
+            </motion.h1>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-indigo-100 text-lg md:text-xl mb-10 max-w-2xl mx-auto"
+            >
               Find answers to common questions about our placement process, eligibility, and more.
-            </p>
-            <div className="relative max-w-2xl mx-auto">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            </motion.p>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="relative max-w-2xl mx-auto"
+            >
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-indigo-300 h-5 w-5" />
               <Input
                 type="text"
                 placeholder="Search for questions..."
-                className="pl-10 py-6 text-lg rounded-full border-none shadow-lg focus-visible:ring-offset-0"
+                className="pl-12 pr-4 py-6 text-base md:text-lg rounded-full border-none shadow-xl focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-0 bg-white/10 text-white placeholder:text-indigo-200"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </div>
+            </motion.div>
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 py-12">
-          <div className="mb-8 overflow-x-auto">
-            <div className="flex space-x-2 min-w-max">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    activeCategory === category || (category === "All" && activeCategory === null)
-                      ? "bg-primary text-white"
-                      : "bg-white text-gray-700 hover:bg-gray-100"
-                  }`}
-                  onClick={() => setActiveCategory(category === "All" ? null : category)}
-                >
-                  {category}
-                </button>
-              ))}
+        {/* Content Section */}
+        <div className="max-w-4xl mx-auto px-4 py-12 -mt-10 relative z-20">
+          {/* Category filters */}
+          <div className="mb-10">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-indigo-950">Filter by category</h2>
+              <button 
+                className="md:hidden flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800"
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <Filter className="w-4 h-4 mr-1" />
+                {showFilters ? "Hide filters" : "Show filters"}
+              </button>
+            </div>
+            
+            <div className={`md:block ${showFilters ? 'block' : 'hidden'}`}>
+              <div className="flex flex-wrap gap-2">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                      activeCategory === category || (category === "All" && activeCategory === null)
+                        ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md"
+                        : "bg-white text-indigo-700 hover:bg-indigo-50 border border-indigo-100"
+                    }`}
+                    onClick={() => setActiveCategory(category === "All" ? null : category)}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
+          {/* FAQ items */}
           {filteredFaqs.length === 0 ? (
-            <div className="text-center py-12">
-              <HelpCircle className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-4 text-lg font-medium text-gray-900">No questions found</h3>
-              <p className="mt-2 text-gray-500">Try adjusting your search or filter criteria</p>
-            </div>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-16 bg-white rounded-2xl shadow-sm border border-indigo-100"
+            >
+              <HelpCircle className="mx-auto h-16 w-16 text-indigo-200" />
+              <h3 className="mt-4 text-xl font-medium text-indigo-900">No questions found</h3>
+              <p className="mt-2 text-indigo-500">Try adjusting your search or filter criteria</p>
+            </motion.div>
           ) : (
-            <div className="space-y-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-4"
+            >
               {filteredFaqs.map((faq, index) => (
-                <div
+                <motion.div
                   key={index}
-                  className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  className="bg-white rounded-xl shadow-sm overflow-hidden border border-indigo-100 hover:shadow-md transition-all duration-300"
                 >
                   <button
                     className="flex justify-between items-center w-full p-6 text-left focus:outline-none"
                     onClick={() => toggleFaq(index)}
+                    aria-expanded={activeIndex === index}
                   >
-                    <span className="text-lg font-medium text-gray-900">{faq.question}</span>
-                    <span className="ml-6 flex-shrink-0">
+                    <span className="text-lg font-medium text-indigo-950">{faq.question}</span>
+                    <span className="ml-6 flex-shrink-0 bg-indigo-50 rounded-full p-2 transition-transform duration-300">
                       {activeIndex === index ? (
-                        <ChevronUp className="h-5 w-5 text-primary" />
+                        <ChevronUp className="h-5 w-5 text-indigo-600" />
                       ) : (
-                        <ChevronDown className="h-5 w-5 text-gray-500" />
+                        <ChevronDown className="h-5 w-5 text-indigo-400" />
                       )}
                     </span>
                   </button>
-                  <div
-                    className={`px-6 pb-6 transition-all duration-300 overflow-hidden ${
-                      activeIndex === index ? "max-h-96" : "max-h-0"
-                    }`}
-                  >
-                    <p className="text-gray-700 whitespace-pre-line">{faq.answer}</p>
-                    <div className="mt-3 flex justify-between items-center">
-                      <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
-                        {faq.category}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                  <AnimatePresence>
+                    {activeIndex === index && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-6 pb-6">
+                          <p className="text-indigo-700 whitespace-pre-line">{faq.answer}</p>
+                          <div className="mt-4 flex justify-between items-center">
+                            <span className="text-xs px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full font-medium">
+                              {faq.category}
+                            </span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
+          
+          {/* Extra help section */}
+          <div className="mt-16 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-2xl p-8 shadow-sm">
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-indigo-800 mb-4">Still have questions?</h3>
+              <p className="text-indigo-600 mb-6">Our placement team is here to help you with any queries.</p>
+              <Link to="/contact" className="inline-flex items-center px-6 py-3 font-medium text-white bg-gradient-to-r from-indigo-600 to-violet-600 rounded-full shadow-md hover:shadow-lg transition-all duration-300">
+                Contact Us <ChevronRight className="ml-2 h-4 w-4" />
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
       <Footer />

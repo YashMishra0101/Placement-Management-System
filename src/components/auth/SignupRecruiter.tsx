@@ -5,21 +5,22 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Loader2, Upload } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "../../useAuth/AuthContext.tsx";
 
 // Create a schema for form validation
 const recruiterFormSchema = z.object({
   companyName: z.string().min(2, "Company name is required"),
   email: z.string().email("Invalid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-      "Password must include uppercase, lowercase, number and special character"
-    ),
+  password: z.string().min(8, "Password must be at least 8 characters"),
   companyInfo: z
     .string()
     .min(50, "Company information must be at least 50 characters"),
@@ -60,16 +61,19 @@ export const SignupRecruiter = ({ onSubmit }: SignupRecruiterProps) => {
 
   const handleSubmit = async (data: z.infer<typeof recruiterFormSchema>) => {
     setIsLoading(true);
-    
+
     try {
-      await signUp(data.email, data.password, {
-        firstName: data.companyName,
-        company_name: data.companyName,
-        company_info: data.companyInfo,
-        logo: data.logo,
-        role: "recruiter",
-      });
-      
+      await signUp(
+        data.email,
+        data.password,
+        {
+          companyName: data.companyName,
+          companyInfo: data.companyInfo,
+          logo: data.logo,
+        },
+        "recruiter"
+      );
+
       onSubmit(data);
     } catch (error) {
       console.error("Error during signup:", error);
@@ -128,7 +132,11 @@ export const SignupRecruiter = ({ onSubmit }: SignupRecruiterProps) => {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="********" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="********"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -163,7 +171,9 @@ export const SignupRecruiter = ({ onSubmit }: SignupRecruiterProps) => {
               ) : (
                 <div className="flex flex-col items-center justify-center text-gray-500">
                   <Upload className="h-10 w-10 mb-2" />
-                  <p className="text-sm font-medium">Upload your company logo</p>
+                  <p className="text-sm font-medium">
+                    Upload your company logo
+                  </p>
                   <p className="text-xs">PNG, JPG up to 5MB</p>
                   <Input
                     id="logo-upload"

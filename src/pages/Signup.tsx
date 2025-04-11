@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -10,6 +9,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/landing/Footer";
 import { SignupStudent } from "@/components/auth/SignupStudent";
 import { SignupRecruiter } from "@/components/auth/SignupRecruiter";
+import { motion } from "framer-motion";
+import AnimatedBackground from "@/components/animations/AnimatedBackground";
+
 
 type Role = "student" | "recruiter" | "admin";
 
@@ -42,70 +44,113 @@ const Signup = () => {
       case "admin":
         return (
           <div className="text-center py-8">
-            <p className="text-lg text-gray-700 mb-4">
-              Admin accounts can only be created by existing administrators.
-            </p>
-            <p className="text-gray-600">
-              Please contact an administrator to get access.
-            </p>
+                  <AnimatedBackground />
+
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+              <div className="flex justify-center mb-4">
+                <div className="rounded-full bg-amber-100 p-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-lg font-medium text-amber-800 mb-2">
+                Admin Access Restricted
+              </p>
+              <p className="text-amber-700">
+                Admin accounts can only be created by existing administrators. Please contact the IT department for access.
+              </p>
+            </div>
           </div>
         );
       default:
-        return null;
+        return (
+          <div className="flex items-center justify-center py-10">
+                  <AnimatedBackground />
+
+            <div className="text-center space-y-4">
+              <div className="inline-block p-4 bg-indigo-50 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <p className="text-lg font-medium text-gray-700">
+                Select your role to continue
+              </p>
+              <p className="text-gray-500 max-w-xs mx-auto">
+                Choose the appropriate role to view the registration form
+              </p>
+            </div>
+          </div>
+        );
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-purple-50 to-violet-50">
+            <AnimatedBackground />
+
       <Navbar />
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="max-w-2xl w-full space-y-8 animate-fade-in">
-          <div className="text-center">
-            <h2 className="mt-6 text-3xl font-bold text-gray-900">
+      <div className="flex-1 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 mt-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-3xl w-full"
+        >
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">
               Create Your Account
             </h2>
-            <p className="mt-2 text-gray-600">
-              Please select your role and fill the required information
+            <p className="text-lg text-gray-600 max-w-md mx-auto">
+              Join GCA Placements to connect with top recruiters and opportunities
             </p>
           </div>
 
-          <Card className="border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-xl">Choose your role</CardTitle>
-              <CardDescription>
-                Select the appropriate role to sign up
+          <Card className="border-0 shadow-2xl rounded-2xl overflow-hidden backdrop-blur-sm bg-white/90">
+            <CardHeader className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-6">
+              <CardTitle className="text-xl font-semibold">Choose your role</CardTitle>
+              <CardDescription className="text-indigo-100">
+                Select the appropriate role to access the registration form
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
+            <CardContent className="p-6 pt-8">
+              <div className="space-y-8">
                 <RoleSelector
                   onRoleSelect={setSelectedRole}
                   selectedRole={selectedRole}
                 />
 
-                {renderForm()}
+                <motion.div
+                  key={selectedRole || "empty"}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {renderForm()}
+                </motion.div>
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col space-y-4">
+            <CardFooter className="flex flex-col space-y-4 p-6 bg-gray-50 border-t border-gray-100">
               <div className="text-center text-sm">
                 Already have an account?{" "}
                 <Link
                   to="/login"
-                  className="font-medium text-primary hover:underline"
+                  className="font-medium text-indigo-600 hover:text-indigo-800 transition-colors duration-200"
                 >
-                  Login
+                  Sign in instead
                 </Link>
               </div>
               <Link
                 to="/"
-                className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
+                className="flex items-center justify-center text-sm text-gray-500 hover:text-indigo-600 transition-colors"
               >
-                <ArrowLeft className="mr-1 h-4 w-4" />
+                <ArrowLeft className="mr-1.5 h-4 w-4" />
                 Back to home
               </Link>
             </CardFooter>
           </Card>
-        </div>
+        </motion.div>
       </div>
       <Footer />
     </div>
