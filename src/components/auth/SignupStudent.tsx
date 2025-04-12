@@ -19,8 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
-import { useAuth } from "../../useAuth/AuthContext.tsx";
 
 // Create a schema for form validation
 const studentFormSchema = z.object({
@@ -63,13 +61,8 @@ const studentFormSchema = z.object({
   backlogs: z.string().min(1, "Backlogs information is required"),
 });
 
-interface SignupStudentProps {
-  onSubmit: (data: z.infer<typeof studentFormSchema>) => void;
-}
-
-export const SignupStudent = ({ onSubmit }: SignupStudentProps) => {
+export const SignupStudent = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { signUp } = useAuth();
 
   const form = useForm<z.infer<typeof studentFormSchema>>({
     resolver: zodResolver(studentFormSchema),
@@ -89,36 +82,6 @@ export const SignupStudent = ({ onSubmit }: SignupStudentProps) => {
     },
   });
 
-  const handleSubmit = async (data: z.infer<typeof studentFormSchema>) => {
-    setIsLoading(true);
-
-    try {
-      await signUp(
-        data.email,
-        data.password,
-        {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          middleName: data.middleName,
-          dob: data.dob,
-          tenthPercentage: data.tenthPercentage,
-          twelfthPercentage: data.twelfthPercentage,
-          cgpa: data.cgpa,
-          branch: data.branch,
-          semester: data.semester,
-          backlogs: data.backlogs,
-        },
-        "student"
-      );
-
-      onSubmit(data);
-    } catch (error) {
-      console.error("Error during signup:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const branches = [
     "Computer Science",
     "Information Technology",
@@ -135,10 +98,7 @@ export const SignupStudent = ({ onSubmit }: SignupStudentProps) => {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit)}
-        className="space-y-6 py-4"
-      >
+      <form className="space-y-6 py-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <FormField
             control={form.control}
@@ -377,14 +337,7 @@ export const SignupStudent = ({ onSubmit }: SignupStudentProps) => {
         </div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creating Account...
-            </>
-          ) : (
-            "Create Student Account"
-          )}
+          {isLoading ? "Creating Account..." : "Create Student Account"}
         </Button>
       </form>
     </Form>

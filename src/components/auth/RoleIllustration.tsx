@@ -1,4 +1,3 @@
-
 import { User, Building2, ShieldCheck } from "lucide-react";
 
 type Role = "student" | "recruiter" | "admin" | null;

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // ✅ Added useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/card";
 import { ArrowLeft, Loader2, Mail, Lock } from "lucide-react";
 import RoleSelector from "@/components/auth/RoleSelector";
-import { useAuth } from "../../useAuth/AuthContext"; // ✅ Removed .tsx extension
 import { useToast } from "@/hooks/use-toast";
 
 type Role = "student" | "recruiter" | "admin";
@@ -31,8 +30,7 @@ const LoginForm = ({ onLoginSuccess, onRoleSelect }: LoginFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { toast } = useToast();
-  const { signIn, user } = useAuth(); // ✅ Added 'user' destructure
-  const navigate = useNavigate(); // ✅ Added navigate
+  const navigate = useNavigate();
 
   const handleRoleSelection = (role: Role | null) => {
     setSelectedRole(role);
@@ -56,19 +54,20 @@ const LoginForm = ({ onLoginSuccess, onRoleSelect }: LoginFormProps) => {
     setIsLoading(true);
 
     try {
-      await signIn(email, password);
-
-      if (user?.role === "admin") {
-        navigate("/admin/dashboard");
-      } else if (onLoginSuccess) {
-        onLoginSuccess();
-      }
+      // Frontend-only login simulation
+      setTimeout(() => {
+        if (onLoginSuccess) {
+          onLoginSuccess();
+        }
+        if (selectedRole === "admin") {
+          navigate("/admin/dashboard");
+        }
+      }, 1000);
     } catch (error) {
       console.error("Login error:", error);
       toast({
         title: "Login Failed",
-        description:
-          error instanceof Error ? error.message : "Invalid credentials",
+        description: "Invalid credentials",
         variant: "destructive",
       });
     } finally {

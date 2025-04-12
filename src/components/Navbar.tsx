@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Link, useLocation } from "react-router-dom";
 import { MenuIcon, XIcon } from "lucide-react";
+import logo from "../images/l.png"; // Corrected import statement
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,8 +14,8 @@ const Navbar = () => {
     { name: "Home", path: "/" },
     { name: "About", path: "/#about" },
     { name: "Features", path: "/#features" },
-    { name: "Contact", path: "/#footer" },
     { name: "FAQs", path: "/faqs" },
+    { name: "Approval Status", path: "/checkapprovalstatus" },
   ];
 
   useEffect(() => {
@@ -43,8 +45,18 @@ const Navbar = () => {
         <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="flex items-center">
-              <span className="text-2xl font-bold text-white">GCA</span>
-              <span className="text-2xl font-bold ml-1 text-white">Placements</span>
+              {/* Added logo image with proper styling */}
+              <img
+                src={logo}
+                alt="GCA Placements Logo"
+                className="h-10 w-auto mr-2 rounded-3xl" // Adjust size as needed
+              />
+              <span className="text-2xl font-extrabold bg-gradient-to-r from-sky-400 via-slate-100 to-indigo-500 bg-clip-text text-transparent mb-1">
+                GCA
+              </span>
+              <span className="text-2xl font-extrabold ml-2 bg-gradient-to-r from-indigo-400 via-slate-100 to-sky-500 bg-clip-text text-transparent mb-1">
+                Placements
+              </span>
             </Link>
           </div>
 
@@ -67,8 +79,8 @@ const Navbar = () => {
             </div>
             <div className="ml-4 flex items-center md:ml-6">
               <Link to="/login">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="mr-2 bg-transparent text-white border-white hover:bg-white/20 hover:text-white transition-colors"
                 >
                   Login
@@ -124,8 +136,8 @@ const Navbar = () => {
           ))}
           <div className="pt-4 flex flex-col space-y-2">
             <Link to="/login" onClick={() => setIsOpen(false)}>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full bg-transparent text-white border-white hover:bg-white/20"
               >
                 Login

@@ -1,4 +1,3 @@
-
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -15,7 +14,7 @@ const HeroSection = () => {
       const timeout = setTimeout(() => {
         setTypedText(prevText => prevText + fullText[currentIndex]);
         setCurrentIndex(prevIndex => prevIndex + 1);
-      }, 100);
+      }, 105);
       
       return () => clearTimeout(timeout);
     }
@@ -42,15 +41,20 @@ const HeroSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="text-center lg:text-left animate-fade-in">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
-              <span className="block text-gray-900">{typedText}<span className={`${showCursor ? 'opacity-100' : 'opacity-0'} transition-opacity`}>|</span></span>
+              <span className="block text-gray-900">
+                {typedText}
+                <span
+                  className={`${showCursor ? "opacity-100" : "opacity-0"} transition-opacity`}
+                >
+                  |
+                </span>
+              </span>
               <span className="block text-gradient mt-2">
                 of Government College Amravati
               </span>
             </h1>
             <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto lg:mx-0">
-              Connecting talented students with leading companies for a
-              brighter future. Streamline your placement process with our
-              all-in-one platform.
+              Connecting talented students with leading companies for a brighter future. Streamline your placement process with our all-in-one platform.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link to="/signup">
@@ -151,29 +155,10 @@ const HeroSection = () => {
                   <div className="flex items-center">
                     <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
                       <svg className="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 19l-7-7-7 7" />
                       </svg>
                     </div>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">Application Approved!</p>
-                      <p className="text-xs text-gray-500">2 minutes ago</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="absolute bottom-0 -left-10 animate-float delay-300">
-                <div className="bg-white rounded-lg shadow-xl p-4 transform -rotate-3 w-48">
-                  <div className="flex items-center">
-                    <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                      <svg className="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">Interview Scheduled</p>
-                      <p className="text-xs text-gray-500">Tomorrow, 10:00 AM</p>
-                    </div>
+                    <p className="ml-3 text-sm text-gray-900">Click to apply for this job</p>
                   </div>
                 </div>
               </div>
