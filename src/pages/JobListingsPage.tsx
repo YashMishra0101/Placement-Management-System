@@ -20,8 +20,6 @@ import { TypeAnimation } from "react-type-animation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/landing/Footer";
 
-
-
 // Dummy job data
 const dummyJobs = [
   {
@@ -168,7 +166,7 @@ const JobListingsPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-14">
-            <Navbar />
+      <Navbar />
 
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-6">
@@ -247,147 +245,112 @@ const JobListingsPage = () => {
             >
               {availableJobs.length > 0 ? (
                 availableJobs.map((job) => (
-                  <Card
-                    key={job.id}
-                    className="border border-gray-200 rounded-lg overflow-hidden"
-                  >
-                    <div
-                      className="p-6 cursor-pointer hover:bg-gray-50 transition-colors"
-                      onClick={() => toggleExpand(job.id)}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="text-xl font-semibold text-gray-800">
-                            {job.jobTitle}
-                          </h3>
-                          <p className="text-gray-600">{job.companyName}</p>
+                   <Card className="border border-gray-200 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white/90 backdrop-blur-sm">
+                      <div className="p-6">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="text-xl font-semibold text-gray-800">
+                              {job.jobTitle}
+                            </h3>
+                            <p className="text-gray-600">{job.companyName}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge className="bg-green-100 text-green-800">
+                              <CheckCircle className="h-4 w-4 mr-1" />
+                              Applied
+                            </Badge>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100"
+                              onClick={() => toggleExpand(job.id)}
+                            >
+                              {expandedJob === job.id
+                                ? "Hide Details"
+                                : "View Details"}
+                              <ChevronDown
+                                className={`h-4 w-4 ml-2 transition-transform ${
+                                  expandedJob === job.id ? "rotate-180" : ""
+                                }`}
+                              />
+                            </Button>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                          <Badge variant="outline">{job.jobType}</Badge>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-green-500 hover:text-green-600 bg-gray-100"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleExpand(job.id);
-                            }}
-                          >
-                            {expandedJob === job.id
-                              ? "Hide Details"
-                              : "View Full Details"}
-                            <ChevronDown
-                              className={`h-4 w-4 ml-2 transition-transform ${
-                                expandedJob === job.id ? "rotate-180" : ""
-                              }`}
-                            />
-                          </Button>
-                        </div>
-                      </div>
 
-                      <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                        <div className="flex items-center text-gray-700">
-                          <MapPin className="h-4 w-4 mr-2 text-indigo-500" />
-                          <span>{job.location}</span>
+                        <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div className="flex items-center text-gray-700">
+                            <MapPin className="h-4 w-4 mr-2 text-indigo-500" />
+                            <span>{job.location}</span>
+                          </div>
+                          <div className="flex items-center text-gray-700">
+                            <DollarSign className="h-4 w-4 mr-2 text-green-500" />
+                            <span>{job.salaryRange}</span>
+                          </div>
+                          <div className="flex items-center text-gray-700">
+                            <Clock className="h-4 w-4 mr-2 text-yellow-500" />
+                            <span>
+                              Applied on: {new Date().toLocaleDateString()}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex items-center text-gray-700">
-                          <DollarSign className="h-4 w-4 mr-2 text-green-500" />
-                          <span>{job.salaryRange}</span>
-                        </div>
-                        <div className="flex items-center text-gray-700">
-                          <Award className="h-4 w-4 mr-2 text-purple-500" />
-                          <span>CGPA: {job.minCGPA}+</span>
-                        </div>
-                        <div className="flex items-center text-gray-700">
-                          <Clock className="h-4 w-4 mr-2 text-yellow-500" />
-                          <span>Posted: {job.postedDate}</span>
-                        </div>
-                      </div>
 
-                      <AnimatePresence>
-                        {expandedJob === job.id && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="mt-6"
-                          >
-                            <div className="border-t border-gray-200 pt-6">
-                              <h4 className="font-medium text-gray-800 mb-3 flex items-center">
-                                <BookOpen className="h-5 w-5 mr-2 text-blue-500" />
-                                Job Description
-                              </h4>
-                              <p className="text-gray-600 mb-6">
-                                {job.jobDescription}
-                              </p>
-
-                              <h4 className="font-medium text-gray-800 mb-3 flex items-center">
-                                <Award className="h-5 w-5 mr-2 text-purple-500" />
-                                Requirements
-                              </h4>
-                              <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-6">
-                                <div>
-                                  10th Percentage: {job.minTenthPercentage}%+
+                        <AnimatePresence>
+                          {expandedJob === job.id && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: "auto" }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="mt-6"
+                            >
+                              <div className="border-t border-gray-200 pt-6">
+                                <div className="bg-green-50 p-4 rounded-lg mb-6">
+                                  <div className="flex items-center gap-2 text-green-700">
+                                    <CheckCircle className="h-5 w-5" />
+                                    <span className="font-medium">Application submitted successfully</span>
+                                  </div>
+                                  <p className="text-sm text-green-600 mt-1">
+                                    Your resume has been sent to the recruiter. You'll be contacted if shortlisted.
+                                  </p>
                                 </div>
-                                <div>
-                                  12th Percentage: {job.minTwelfthPercentage}%+
+
+                                <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                                  <h4 className="font-medium text-gray-800 mb-2 flex items-center">
+                                    <BookOpen className="h-5 w-5 mr-2 text-blue-500" />
+                                    Job Description
+                                  </h4>
+                                  <p className="text-gray-600">{job.jobDescription}</p>
                                 </div>
-                                <div>Maximum Backlogs: {job.maxBacklogs}</div>
-                              </div>
 
-                              <h4 className="font-medium text-gray-800 mb-3">
-                                Skills Required
-                              </h4>
-                              <div className="flex flex-wrap gap-2 mb-6">
-                                {job.skillsRequired.map((skill, index) => (
-                                  <Badge key={index} variant="secondary">
-                                    {skill}
-                                  </Badge>
-                                ))}
-                              </div>
+                                <div className="bg-gray-50 p-4 rounded-lg">
+                                  <h4 className="font-medium text-gray-800 mb-2">
+                                    Skills Required
+                                  </h4>
+                                  <div className="flex flex-wrap gap-2">
+                                    {job.skillsRequired.map((skill, index) => (
+                                      <Badge 
+                                        key={index} 
+                                        variant="secondary"
+                                        className="bg-indigo-100 text-indigo-700"
+                                      >
+                                        {skill}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                </div>
 
-                              <div className="flex flex-col sm:flex-row gap-3">
-                                <label className="flex-1">
-                                  <Input
-                                    type="file"
-                                    accept=".pdf"
-                                    onChange={(e) =>
-                                      handleFileChange(job.id, e)
-                                    }
-                                    className="hidden"
-                                    id={`resume-upload-${job.id}`}
-                                  />
-                                  <Button
-                                    variant="outline"
-                                    className="w-full gap-2"
-                                    asChild
-                                  >
-                                    <div>
-                                      <Upload className="h-4 w-4" />
-                                      {uploadedFiles[job.id] ? (
-                                        <span className="truncate max-w-[120px]">
-                                          {uploadedFiles[job.id]?.name}
-                                        </span>
-                                      ) : (
-                                        <span>Upload Resume (PDF)</span>
-                                      )}
-                                    </div>
-                                  </Button>
-                                </label>
-                                <Button
-                                  onClick={() => handleApply(job.id)}
-                                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-                                >
-                                  Apply Now
-                                </Button>
+                                <p className="text-sm text-gray-500 mt-4">
+                                  You applied with:{" "}
+                                  <span className="font-medium">
+                                    {uploadedFiles[job.id]?.name || "Resume.pdf"}
+                                  </span>
+                                </p>
                               </div>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  </Card>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </Card>
                 ))
               ) : (
                 <div className="text-center py-12 bg-gray-50 rounded-lg">
@@ -525,13 +488,16 @@ const JobListingsPage = () => {
         </AnimatePresence>
       </div>
       <div className="-mb-16 -pr-12 mt-14">
-
-      <Footer />
+        <Footer />
       </div>
     </div>
-    
   );
-
 };
 
 export default JobListingsPage;
+
+
+
+
+
+
