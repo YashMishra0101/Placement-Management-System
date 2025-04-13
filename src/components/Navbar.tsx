@@ -51,8 +51,8 @@ const Navbar = () => {
                 alt="GCA Placements Logo"
                 className="h-10 w-auto mr-2 rounded-3xl" // Adjust size as needed
               />
-              <span className="text-2xl font-extrabold bg-gradient-to-r from-sky-400 via-slate-100 to-indigo-500 bg-clip-text text-transparent mb-1">
-                GCA
+              <span className="text-2xl font-extrabold bg-gradient-to-r from-sky-400 via-slate-100 to-indigo-400 bg-clip-text text-transparent mb-1">
+                GCOEA
               </span>
               <span className="text-2xl font-extrabold ml-2 bg-gradient-to-r from-indigo-400 via-slate-100 to-sky-500 bg-clip-text text-transparent mb-1">
                 Placements

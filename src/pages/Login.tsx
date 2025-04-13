@@ -5,9 +5,9 @@ import Footer from "@/components/landing/Footer";
 import LoginForm from "@/components/auth/LoginForm";
 import RoleIllustration from "@/components/auth/RoleIllustration";
 import { motion, AnimatePresence } from "framer-motion";
-import AnimatedBackground from "@/components/animations/AnimatedBackground";
 import { Popover } from "@/components/ui/popover";
 import { TypeAnimation } from 'react-type-animation';
+import AnimatedBackground from "@/components/animations/AnimatedBackground";
 
 const Login = () => {
   const [selectedRole, setSelectedRole] = useState<"student" | "recruiter" | "admin" | null>(null);
@@ -173,6 +173,7 @@ const Login = () => {
                   <LoginForm 
                     onLoginSuccess={handleLoginSuccess} 
                     onRoleSelect={handleRoleSelect}
+                    selectedRole={selectedRole}
                   />
                 </motion.div>
               </AnimatePresence>
