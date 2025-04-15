@@ -26,7 +26,7 @@ const AboutSection = () => {
             <p className="text-lg text-gray-600 mb-6">
               Government College of Amravati is one of the premier educational
               institutions in Maharashtra, known for its excellence in academics
-              and professional courses. Established in 1950, the college has been
+              and professional courses. Established in 1964, the college has been
               consistently producing talented professionals who excel in various
               fields.
             </p>

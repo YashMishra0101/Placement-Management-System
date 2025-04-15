@@ -130,12 +130,21 @@ const ParticleBackground = () => {
 
 interface StatusCardProps {
   status: "approved" | "pending" | "rejected";
-  type?: "student" | "recruiter";
-  data?: any;
+  role?: "student" | "recruiter";
+  userData?: any;
+  studentData?: any;
+  recruiterData?: any;
   message?: string;
 }
 
-const StatusCard = ({ status, type, data, message }: StatusCardProps) => {
+const StatusCard = ({
+  status,
+  role,
+  userData,
+  studentData,
+  recruiterData,
+  message,
+}: StatusCardProps) => {
   const renderIcon = () => {
     switch (status) {
       case "approved":
@@ -194,12 +203,15 @@ const StatusCard = ({ status, type, data, message }: StatusCardProps) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          {message}
+          {message ||
+            (status === "pending"
+              ? "Your application is under review. Please check back later."
+              : "Your application was not approved. Please contact support for more information.")}
         </motion.p>
       );
     }
 
-    if (status === "approved" && type === "student") {
+    if (status === "approved" && role === "student" && studentData) {
       return (
         <motion.div
           className="space-y-4 text-left"
@@ -214,11 +226,20 @@ const StatusCard = ({ status, type, data, message }: StatusCardProps) => {
             {[
               {
                 label: "Name",
-                value: `${data?.firstName} ${data?.middleName} ${data?.lastName}`,
+                value: `${studentData.first_name} ${
+                  studentData.middle_name || ""
+                } ${studentData.last_name}`,
               },
-              { label: "Email", value: data?.email },
-              { label: "Branch", value: data?.branch },
-              { label: "CGPA", value: data?.cgpa },
+              { label: "Email", value: userData?.email },
+              { label: "Branch", value: studentData.branch },
+              { label: "CGPA", value: studentData.cgpa },
+              { label: "10th Percentage", value: studentData.tenth_percentage },
+              {
+                label: "12th Percentage",
+                value: studentData.twelfth_percentage,
+              },
+              { label: "Semester", value: studentData.semester },
+              { label: "Backlogs", value: studentData.backlogs || "None" },
             ].map((item, index) => (
               <motion.div
                 key={index}
@@ -236,7 +257,7 @@ const StatusCard = ({ status, type, data, message }: StatusCardProps) => {
       );
     }
 
-    if (status === "approved" && type === "recruiter") {
+    if (status === "approved" && role === "recruiter" && recruiterData) {
       return (
         <motion.div
           className="space-y-4 text-left"
@@ -249,9 +270,9 @@ const StatusCard = ({ status, type, data, message }: StatusCardProps) => {
           </p>
           <div className="grid grid-cols-1 gap-3">
             {[
-              { label: "Company", value: data?.companyName },
-              { label: "Email", value: data?.email },
-              { label: "About", value: data?.companyInfo },
+              { label: "Company", value: recruiterData.company_name },
+              { label: "Email", value: userData?.email },
+              { label: "About", value: recruiterData.company_info },
             ].map((item, index) => (
               <motion.div
                 key={index}
@@ -264,6 +285,20 @@ const StatusCard = ({ status, type, data, message }: StatusCardProps) => {
                 <p className="font-medium">{item.value}</p>
               </motion.div>
             ))}
+            {recruiterData.logo_url && (
+              <motion.div
+                className="flex justify-center mt-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <img
+                  src={recruiterData.logo_url}
+                  alt="Company Logo"
+                  className="h-24 object-contain rounded-lg"
+                />
+              </motion.div>
+            )}
           </div>
         </motion.div>
       );
@@ -295,49 +330,18 @@ const StatusCard = ({ status, type, data, message }: StatusCardProps) => {
 
 const CheckApprovalStatus = () => {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<any>(null);
+  const [statusData, setStatusData] = useState<{
+    status: "approved" | "pending" | "rejected";
+    role?: "student" | "recruiter";
+    userData?: any;
+    studentData?: any;
+    recruiterData?: any;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [userType, setUserType] = useState<"student" | "recruiter">("student");
   const { toast } = useToast();
 
-  // Mock data
-  const mockApprovedStudent = {
-    type: "student",
-    status: "approved",
-    data: {
-      firstName: "Rahul",
-      middleName: "Kumar",
-      lastName: "Sharma",
-      email: "rahul.sharma@example.com",
-      branch: "Computer Science",
-      cgpa: 8.7,
-    },
-  };
-
-  const mockApprovedRecruiter = {
-    type: "recruiter",
-    status: "approved",
-    data: {
-      companyName: "Tech Solutions Inc.",
-      email: "hr@techsolutions.com",
-      companyInfo:
-        "Leading tech company specializing in software development and AI solutions with offices in 12 countries worldwide.",
-    },
-  };
-
-  const mockPending = {
-    status: "pending",
-    message:
-      "Your application is currently under review. Our team typically processes applications within 3-5 business days. You'll receive an email notification once a decision has been made.",
-  };
-
-  const mockRejected = {
-    status: "rejected",
-    message:
-      "After careful consideration, we're unable to approve your application at this time. If you believe this is an error or would like more information, please contact our support team at support@example.com.",
-  };
-
-  const checkStatus = () => {
+  const checkStatus = async () => {
     if (!email) {
       toast({
         title: "Email Required",
@@ -348,44 +352,40 @@ const CheckApprovalStatus = () => {
     }
 
     setIsLoading(true);
-    setStatus(null);
+    setStatusData(null);
 
-    // Simulate API call
-    setTimeout(() => {
-      try {
-        // Mock response based on email
-        if (email.includes("student")) {
-          setStatus(mockApprovedStudent);
-        } else if (email.includes("recruiter")) {
-          setStatus(mockApprovedRecruiter);
-        } else if (email.includes("pending")) {
-          setStatus(mockPending);
-        } else if (email.includes("rejected")) {
-          setStatus(mockRejected);
-        } else {
-          toast({
-            title: "No Record Found",
-            description:
-              "We couldn't find an application with this email. Please verify the email address and try again.",
-            variant: "destructive",
-          });
-        }
-      } catch (err) {
-        toast({
-          title: "Error",
-          description:
-            "An error occurred while checking your status. Please try again later.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    }, 1500);
+    try {
+      // Mock response - replace this with your actual API call
+      const mockResponse = {
+        status: "pending",
+        role: userType,
+        userData: { email },
+      };
+
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      setStatusData(mockResponse);
+      
+      toast({
+        title: "Status Checked",
+        description: "This is a demo response. In a real application, this would check your actual status.",
+      });
+    } catch (error) {
+      console.error("Error checking status:", error);
+      toast({
+        title: "Error",
+        description: "Failed to check approval status",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white relative overflow-hidden">
-       <Navbar />
+      <Navbar />
       <ParticleBackground />
 
       <div className="max-w-5xl mx-auto relative z-10 mt-20">
@@ -440,7 +440,7 @@ const CheckApprovalStatus = () => {
                     variant={userType === "student" ? "default" : "ghost"}
                     onClick={() => {
                       setUserType("student");
-                      setStatus(null);
+                      setStatusData(null);
                     }}
                     className={`gap-2 rounded-full transition-all ${
                       userType === "student" ? "shadow-md" : ""
@@ -453,7 +453,7 @@ const CheckApprovalStatus = () => {
                     variant={userType === "recruiter" ? "default" : "ghost"}
                     onClick={() => {
                       setUserType("recruiter");
-                      setStatus(null);
+                      setStatusData(null);
                     }}
                     className={`gap-2 rounded-full transition-all ${
                       userType === "recruiter" ? "shadow-md" : ""
@@ -510,15 +510,10 @@ const CheckApprovalStatus = () => {
                     )}
                   </Button>
                 </div>
-                <div className="text-xs text-gray-500 mt-2 px-1">
-                  {userType === "student"
-                    ? "For demo, try: 'student@example.com', 'pending@example.com', or 'rejected@example.com'"
-                    : "For demo, try: 'recruiter@example.com', 'pending@example.com', or 'rejected@example.com'"}
-                </div>
               </motion.div>
 
               {/* Result Display */}
-              {status && (
+              {statusData && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
@@ -526,10 +521,11 @@ const CheckApprovalStatus = () => {
                   className="mt-8"
                 >
                   <StatusCard
-                    status={status.status}
-                    type={status.type}
-                    data={status.data}
-                    message={status.message}
+                    status={statusData.status}
+                    role={statusData.role}
+                    userData={statusData.userData}
+                    studentData={statusData.studentData}
+                    recruiterData={statusData.recruiterData}
                   />
                 </motion.div>
               )}

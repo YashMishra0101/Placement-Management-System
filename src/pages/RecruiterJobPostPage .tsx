@@ -6,8 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Link } from 'react-router-dom'; // Make sure this is imported at the top
-
+import { Link } from 'react-router-dom';
 import {
   Form,
   FormControl,
@@ -23,10 +22,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Loader2, Briefcase, Users, CheckCircle2, XCircle, Download, Plus, X } from 'lucide-react';
+import { Loader2, Briefcase, Users, CheckCircle2, XCircle, Plus, X, Menu } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const jobPostSchema = z.object({
   jobTitle: z.string().min(5, "Job title must be at least 5 characters"),
@@ -48,6 +54,57 @@ const JobPostForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [skillsInput, setSkillsInput] = useState('');
   const [skills, setSkills] = useState<string[]>([]);
+
+  const dummyStudents = [
+    {
+      id: 1,
+      firstName: "Rahul",
+      middleName: "Kumar",
+      lastName: "Sharma",
+      branch: "Computer Science",
+      cgpa: 8.7,
+      tenthPercentage: 92,
+      twelfthPercentage: 88,
+      backlogs: 0,
+      skills: ["JavaScript", "React", "Node.js"]
+    },
+    {
+      id: 2,
+      firstName: "Priya",
+      middleName: "",
+      lastName: "Patel",
+      branch: "Information Technology",
+      cgpa: 9.2,
+      tenthPercentage: 95,
+      twelfthPercentage: 90,
+      backlogs: 0,
+      skills: ["Python", "Django", "Machine Learning"]
+    },
+    {
+      id: 3,
+      firstName: "Amit",
+      middleName: "Singh",
+      lastName: "Verma",
+      branch: "Electronics",
+      cgpa: 7.8,
+      tenthPercentage: 85,
+      twelfthPercentage: 80,
+      backlogs: 1,
+      skills: ["Embedded Systems", "C++", "IoT"]
+    },
+    {
+      id: 4,
+      firstName: "Neha",
+      middleName: "",
+      lastName: "Gupta",
+      branch: "Mechanical",
+      cgpa: 8.1,
+      tenthPercentage: 89,
+      twelfthPercentage: 82,
+      backlogs: 0,
+      skills: ["CAD", "SolidWorks", "Thermodynamics"]
+    },
+  ];
 
   const form = useForm<z.infer<typeof jobPostSchema>>({
     resolver: zodResolver(jobPostSchema),
@@ -85,7 +142,6 @@ const JobPostForm = () => {
   const onSubmit = async (data: z.infer<typeof jobPostSchema>) => {
     setIsLoading(true);
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       toast({
         title: "Job Posted Successfully",
@@ -127,7 +183,6 @@ const JobPostForm = () => {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Job Details */}
                 <motion.div 
                   className="space-y-6"
                   initial={{ opacity: 0, x: -20 }}
@@ -213,7 +268,6 @@ const JobPostForm = () => {
                   />
                 </motion.div>
 
-                {/* Company Details */}
                 <motion.div 
                   className="space-y-6"
                   initial={{ opacity: 0, x: 20 }}
@@ -258,7 +312,6 @@ const JobPostForm = () => {
                 </motion.div>
               </div>
 
-              {/* Job Description */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -283,7 +336,6 @@ const JobPostForm = () => {
                 />
               </motion.div>
 
-              {/* Skills */}
               <motion.div
                 className="space-y-4"
                 initial={{ opacity: 0, y: 10 }}
@@ -291,7 +343,7 @@ const JobPostForm = () => {
                 transition={{ delay: 0.35 }}
               >
                 <FormLabel className="text-gray-700 font-medium">Required Skills *</FormLabel>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Input
                     placeholder="Add a skill (e.g. JavaScript)"
                     value={skillsInput}
@@ -343,9 +395,8 @@ const JobPostForm = () => {
                 )}
               </motion.div>
 
-              {/* Requirements */}
               <motion.div 
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
@@ -477,64 +528,8 @@ const JobPostForm = () => {
   );
 };
 
-// Dummy student data
-const dummyStudents = [
-  {
-    id: 1,
-    firstName: "Rahul",
-    middleName: "Kumar",
-    lastName: "Sharma",
-    branch: "Computer Science",
-    cgpa: 8.7,
-    tenthPercentage: 92,
-    twelfthPercentage: 88,
-    backlogs: 0,
-    resumeUrl: "#",
-    skills: ["JavaScript", "React", "Node.js"]
-  },
-  {
-    id: 2,
-    firstName: "Priya",
-    middleName: "",
-    lastName: "Patel",
-    branch: "Information Technology",
-    cgpa: 9.2,
-    tenthPercentage: 95,
-    twelfthPercentage: 90,
-    backlogs: 0,
-    resumeUrl: "#",
-    skills: ["Python", "Django", "Machine Learning"]
-  },
-  {
-    id: 3,
-    firstName: "Amit",
-    middleName: "Singh",
-    lastName: "Verma",
-    branch: "Electronics",
-    cgpa: 7.8,
-    tenthPercentage: 85,
-    twelfthPercentage: 80,
-    backlogs: 1,
-    resumeUrl: "#",
-    skills: ["Embedded Systems", "C++", "IoT"]
-  },
-  {
-    id: 4,
-    firstName: "Neha",
-    middleName: "",
-    lastName: "Gupta",
-    branch: "Mechanical",
-    cgpa: 8.1,
-    tenthPercentage: 89,
-    twelfthPercentage: 82,
-    backlogs: 0,
-    resumeUrl: "#",
-    skills: ["CAD", "SolidWorks", "Thermodynamics"]
-  },
-];
-
 const ApplicantsList = ({ students, onApprove, onReject }: {
-  students: typeof dummyStudents;
+  students: any[];
   onApprove: (id: number) => void;
   onReject: (id: number) => void;
 }) => {
@@ -571,7 +566,7 @@ const ApplicantsList = ({ students, onApprove, onReject }: {
                     className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all"
                   >
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                      <div className="space-y-3">
+                      <div className="space-y-3 flex-1">
                         <div>
                           <h3 className="text-xl font-semibold text-gray-800">
                             {student.firstName} {student.middleName} {student.lastName}
@@ -580,7 +575,7 @@ const ApplicantsList = ({ students, onApprove, onReject }: {
                         </div>
                         
                         <div className="flex flex-wrap gap-2">
-                          {student.skills.map((skill, index) => (
+                          {student.skills.map((skill: string, index: number) => (
                             <Badge 
                               key={index} 
                               variant="secondary"
@@ -591,7 +586,7 @@ const ApplicantsList = ({ students, onApprove, onReject }: {
                           ))}
                         </div>
                         
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
                           <div>
                             <p className="text-sm text-gray-500">CGPA</p>
                             <p className="font-medium">{student.cgpa}/10</p>
@@ -611,16 +606,7 @@ const ApplicantsList = ({ students, onApprove, onReject }: {
                         </div>
                       </div>
                       
-                      <div className="flex flex-col sm:flex-row md:flex-col gap-2 min-w-[200px]">
-                        <Button
-                          variant="outline"
-                          size="lg"
-                          onClick={() => window.open(student.resumeUrl, "_blank")}
-                          className="gap-2"
-                        >
-                          <Download size={18} />
-                          Resume
-                        </Button>
+                      <div className="flex flex-row sm:flex-col gap-2 min-w-[200px]">
                         <div className="flex gap-2">
                           <Button
                             variant="success"
@@ -629,7 +615,7 @@ const ApplicantsList = ({ students, onApprove, onReject }: {
                             className="flex-1 gap-2"
                           >
                             <CheckCircle2 size={18} />
-                            Approve
+                            <span className="hidden sm:inline">Approve</span>
                           </Button>
                           <Button
                             variant="destructive"
@@ -638,7 +624,7 @@ const ApplicantsList = ({ students, onApprove, onReject }: {
                             className="flex-1 gap-2"
                           >
                             <XCircle size={18} />
-                            Reject
+                            <span className="hidden sm:inline">Reject</span>
                           </Button>
                         </div>
                       </div>
@@ -671,9 +657,10 @@ const ApplicantsList = ({ students, onApprove, onReject }: {
   );
 };
 
-const RecruiterJobPostPage  = () => {
+const RecruiterJobPostPage = () => {
   const [activeTab, setActiveTab] = useState<"jobPosting" | "applicants">("jobPosting");
-  const [students, setStudents] = useState(dummyStudents);
+  const [students, setStudents] = useState<any[]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { toast } = useToast();
 
   const handleApprove = (studentId: number) => {
@@ -694,25 +681,27 @@ const RecruiterJobPostPage  = () => {
     });
   };
 
+  const handleTabChange = (tab: "jobPosting" | "applicants") => {
+    setActiveTab(tab);
+    setMobileMenuOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Navigation Bar */}
       <nav className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-                        <Link to="/login">
-            
-                          <Button variant="outline" className="mr-4 bg-slate-200">
-                            ← Back
-                          </Button>
-                          </Link>
-            
-                        </div>
+              <Link to="/login">
+                <Button variant="outline" className="mr-4 bg-slate-200">
+                  ← Back
+                </Button>
+              </Link>
+            </div>
             <div className="flex items-center">
               <div className="flex-shrink-0 flex items-center">
                 <motion.span 
-                  className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent ml-32"
+                  className="text-xl font-bold md:ml-20 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}
@@ -721,9 +710,10 @@ const RecruiterJobPostPage  = () => {
                 </motion.span>
               </div>
             </div>
+            
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <motion.button
-                onClick={() => setActiveTab("jobPosting")}
+                onClick={() => handleTabChange("jobPosting")}
                 className={`${
                   activeTab === "jobPosting"
                     ? "border-indigo-500 text-gray-900"
@@ -736,7 +726,7 @@ const RecruiterJobPostPage  = () => {
                 Job Posting
               </motion.button>
               <motion.button
-                onClick={() => setActiveTab("applicants")}
+                onClick={() => handleTabChange("applicants")}
                 className={`${
                   activeTab === "applicants"
                     ? "border-indigo-500 text-gray-900"
@@ -749,11 +739,43 @@ const RecruiterJobPostPage  = () => {
                 View Applicants
               </motion.button>
             </div>
+            
+            <div className="sm:hidden flex items-center">
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu className="h-6 w-6" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="top" className="pt-12">
+                  <SheetHeader>
+                    <SheetTitle className="text-left">Menu</SheetTitle>
+                  </SheetHeader>
+                  <div className="space-y-4 py-4">
+                    <Button
+                      variant={activeTab === "jobPosting" ? "secondary" : "ghost"}
+                      className="w-full justify-start"
+                      onClick={() => handleTabChange("jobPosting")}
+                    >
+                      <Briefcase className="mr-2 h-5 w-5" />
+                      Job Posting
+                    </Button>
+                    <Button
+                      variant={activeTab === "applicants" ? "secondary" : "ghost"}
+                      className="w-full justify-start"
+                      onClick={() => handleTabChange("applicants")}
+                    >
+                      <Users className="mr-2 h-5 w-5" />
+                      View Applicants
+                    </Button>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </div>
       </nav>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatePresence mode="wait">
           {activeTab === "jobPosting" ? (
@@ -771,4 +793,4 @@ const RecruiterJobPostPage  = () => {
   );
 };
 
-export default RecruiterJobPostPage ;
+export default RecruiterJobPostPage;

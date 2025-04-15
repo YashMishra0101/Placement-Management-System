@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useLocation } from "react-router-dom";
 import { MenuIcon, XIcon } from "lucide-react";
-import logo from "../images/l.png"; // Corrected import statement
+import logo from "../images/logo1.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -45,11 +45,10 @@ const Navbar = () => {
         <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="flex items-center">
-              {/* Added logo image with proper styling */}
               <img
                 src={logo}
                 alt="GCA Placements Logo"
-                className="h-10 w-auto mr-2 rounded-3xl" // Adjust size as needed
+                className="h-10 w-auto mr-2 rounded-3xl"
               />
               <span className="text-2xl font-extrabold bg-gradient-to-r from-sky-400 via-slate-100 to-indigo-400 bg-clip-text text-transparent mb-1">
                 GCOEA
@@ -80,14 +79,23 @@ const Navbar = () => {
             <div className="ml-4 flex items-center md:ml-6">
               <Link to="/login">
                 <Button
-                  variant="outline"
-                  className="mr-2 bg-transparent text-white border-white hover:bg-white/20 hover:text-white transition-colors"
+                  className={`mr-2 transition-all ${
+                    location.pathname === "/login"
+                      ? "  bg-indigo-600 text-white"
+                      : "bg-white text-indigo-600 "
+                  }`}
                 >
                   Login
                 </Button>
               </Link>
               <Link to="/signup">
-                <Button className="bg-white text-indigo-600 shadow-md hover:bg-white/90 hover:text-indigo-700 transition-all">
+                <Button
+                  className={`transition-all ${
+                    location.pathname === "/signup"
+                      ? "  bg-indigo-600 text-white"
+                      : "bg-white text-indigo-600 "
+                  }`}
+                >
                   Sign Up
                 </Button>
               </Link>
@@ -137,14 +145,23 @@ const Navbar = () => {
           <div className="pt-4 flex flex-col space-y-2">
             <Link to="/login" onClick={() => setIsOpen(false)}>
               <Button
-                variant="outline"
-                className="w-full bg-transparent text-white border-white hover:bg-white/20"
+                className={`w-full transition-all ${
+                  location.pathname === "/login"
+                    ? "  bg-indigo-600 text-white"
+                    : "bg-white text-indigo-600 "
+                }`}
               >
                 Login
               </Button>
             </Link>
             <Link to="/signup" onClick={() => setIsOpen(false)}>
-              <Button className="w-full bg-white text-indigo-600 hover:bg-white/90">
+              <Button
+                className={`w-full transition-all ${
+                  location.pathname === "/signup"
+                    ? "  bg-indigo-600 text-white"
+                    : "bg-white text-indigo-600 "
+                }`}
+              >
                 Sign Up
               </Button>
             </Link>

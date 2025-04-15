@@ -1,19 +1,29 @@
-
 import { Link } from "react-router-dom";
-import { Facebook, Twitter, Linkedin, Instagram, Mail, MapPin, Phone } from "lucide-react";
+import {
+  Facebook,
+  Twitter,
+  Linkedin,
+  Instagram,
+  Mail,
+  MapPin,
+  Phone,
+} from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer id="footer"  className=" bg-gray-900 text-white">
+    <footer id="footer" className=" bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <Link to="/" className="flex items-center mb-4">
               <span className="text-2xl font-bold text-primary">GCA</span>
-              <span className="text-2xl font-bold text-white ml-1">Placements</span>
+              <span className="text-2xl font-bold text-white ml-1">
+                Placements
+              </span>
             </Link>
             <p className="text-gray-400 mb-4">
-              Connecting talented students with leading companies for a brighter future.
+              Connecting talented students with leading companies for a brighter
+              future.
             </p>
             <div className="flex space-x-4">
               <a
@@ -114,7 +124,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/faqs"
                   className="text-gray-400 hover:text-primary transition-colors"
                 >
                   Placement FAQs
@@ -122,7 +132,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/faqs"
                   className="text-gray-400 hover:text-primary transition-colors"
                 >
                   Resources
@@ -142,7 +152,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center">
                 <Phone className="mr-2 h-5 w-5 text-primary shrink-0" />
-                <span className="text-gray-400">+91 12345 67890</span>
+                <span className="text-gray-400">+91 0721-253L930</span>
               </li>
               <li className="flex items-center">
                 <Mail className="mr-2 h-5 w-5 text-primary shrink-0" />
@@ -150,7 +160,7 @@ const Footer = () => {
                   href="mailto:placements@gca.edu"
                   className="text-gray-400 hover:text-primary transition-colors"
                 >
-                  placements@gca.edu
+                  principal@gcoea.ac.in
                 </a>
               </li>
             </ul>
@@ -159,10 +169,11 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-500 text-sm mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} Government College Amravati Placement Portal. All rights reserved.
+            &copy; {new Date().getFullYear()} Government College Amravati
+            Placement Portal. All rights reserved.
           </p>
           <p className="text-gray-500 text-sm">
-            Developed with ❤️ by Yash's Team
+            Developed with ❤️ by Yash Mishra
           </p>
         </div>
       </div>

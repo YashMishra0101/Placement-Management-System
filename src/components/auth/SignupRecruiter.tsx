@@ -13,26 +13,27 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 
-// Create a schema for form validation
 const recruiterFormSchema = z.object({
   companyName: z.string().min(2, "Company name is required"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  companyInfo: z
-    .string()
-    .min(50, "Company information must be at least 50 characters"),
-  logo: z.string().optional(),
+  confirmPassword: z.string().min(8, "Please confirm your password"),
+  companyInfo: z.string().min(30, "Company information must be at least 30 characters"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
 interface SignupRecruiterProps {
   onSubmit: (data: z.infer<typeof recruiterFormSchema>) => void;
+  isSubmitting: boolean;
 }
 
-export const SignupRecruiter = ({ onSubmit }: SignupRecruiterProps) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+export const SignupRecruiter = ({ onSubmit, isSubmitting }: SignupRecruiterProps) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const form = useForm<z.infer<typeof recruiterFormSchema>>({
     resolver: zodResolver(recruiterFormSchema),
@@ -40,152 +41,117 @@ export const SignupRecruiter = ({ onSubmit }: SignupRecruiterProps) => {
       companyName: "",
       email: "",
       password: "",
+      confirmPassword: "",
       companyInfo: "",
-      logo: "",
     },
   });
 
-  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setLogoPreview(reader.result as string);
-        form.setValue("logo", reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = async (data: z.infer<typeof recruiterFormSchema>) => {
-    setIsLoading(true);
-
-    try {
-      // Here you would handle the signup logic without Supabase.
-      // Replace this with your own authentication logic.
-      
-      onSubmit(data);
-    } catch (error) {
-      console.error("Error during signup:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit)}
-        className="space-y-6 py-4"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6 py-2 sm:py-4">
+        <div className="space-y-3 sm:space-y-4">
+          <FormField
+            control={form.control}
+            name="companyName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs sm:text-sm">Company Name</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Your company name" 
+                    {...field} 
+                    className="text-xs sm:text-sm h-8 sm:h-9"
+                  />
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+          <div className="mt-2 sm:mt-4">
             <FormField
               control={form.control}
-              name="companyName"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Company Name</FormLabel>
+                  <FormLabel className="text-xs sm:text-sm">Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your company name" {...field} />
+                    <Input 
+                      type="email" 
+                      placeholder="company@example.com" 
+                      {...field} 
+                      className="text-xs sm:text-sm h-8 sm:h-9"
+                    />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs" />
                 </FormItem>
               )}
             />
-
-            <div className="mt-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="company@example.com"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="mt-4">
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="********"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
           </div>
-
-          <div>
-            <FormLabel>Company Logo</FormLabel>
-            <div className="mt-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 h-48">
-              {logoPreview ? (
-                <div className="relative w-full h-full">
-                  <img
-                    src={logoPreview}
-                    alt="Logo preview"
-                    className="w-full h-full object-contain"
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    className="absolute top-0 right-0"
-                    onClick={() => {
-                      setLogoPreview(null);
-                      form.setValue("logo", "");
-                    }}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center text-gray-500">
-                  <Upload className="h-10 w-10 mb-2" />
-                  <p className="text-sm font-medium">
-                    Upload your company logo
-                  </p>
-                  <p className="text-xs">PNG, JPG up to 5MB</p>
-                  <Input
-                    id="logo-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleLogoChange}
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="mt-2"
-                    onClick={() => {
-                      document.getElementById("logo-upload")?.click();
-                    }}
-                  >
-                    Select File
-                  </Button>
-                </div>
+          <div className="mt-2 sm:mt-4">
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs sm:text-sm">Password</FormLabel>
+                  <div className="relative">
+                    <FormControl>
+                      <Input 
+                        type={showPassword ? "text" : "password"}
+                        placeholder="********" 
+                        {...field} 
+                        className="text-xs sm:text-sm h-8 sm:h-9 pr-8"
+                      />
+                    </FormControl>
+                    <button
+                      type="button"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                  <FormMessage className="text-xs" />
+                </FormItem>
               )}
-            </div>
+            />
+          </div>
+          <div className="mt-2 sm:mt-4">
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs sm:text-sm">Confirm Password</FormLabel>
+                  <div className="relative">
+                    <FormControl>
+                      <Input 
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Confirm your password" 
+                        {...field} 
+                        className="text-xs sm:text-sm h-8 sm:h-9 pr-8"
+                      />
+                    </FormControl>
+                    <button
+                      type="button"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
           </div>
         </div>
 
@@ -194,23 +160,27 @@ export const SignupRecruiter = ({ onSubmit }: SignupRecruiterProps) => {
           name="companyInfo"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Company Information</FormLabel>
+              <FormLabel className="text-xs sm:text-sm">Company Information</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Provide detailed information about your company, industry, and what you're looking for in candidates..."
-                  className="min-h-[150px]"
+                  className="min-h-[100px] sm:min-h-[150px] text-xs sm:text-sm"
                   {...field}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-xs" />
             </FormItem>
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? (
+        <Button 
+          type="submit" 
+          className="w-full h-9 sm:h-10" 
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
               Creating Account...
             </>
           ) : (
