@@ -15,7 +15,7 @@ const Navbar = () => {
     { name: "About", path: "/#about" },
     { name: "Features", path: "/#features" },
     { name: "FAQs", path: "/faqs" },
-    { name: "Approval Status", path: "/checkapprovalstatus" },
+    { name: "Contact Us", path: "/contactus" },
   ];
 
   useEffect(() => {
@@ -88,15 +88,11 @@ const Navbar = () => {
                   Login
                 </Button>
               </Link>
-              <Link to="/signup">
+              <Link to="/logout">
                 <Button
-                  className={`transition-all ${
-                    location.pathname === "/signup"
-                      ? "  bg-indigo-600 text-white"
-                      : "bg-white text-indigo-600 "
-                  }`}
+                  className="border border-red-600 text-red-600 bg-white hover:bg-red-500 hover:text-white transition-all"
                 >
-                  Sign Up
+                  Logout
                 </Button>
               </Link>
             </div>
@@ -154,15 +150,11 @@ const Navbar = () => {
                 Login
               </Button>
             </Link>
-            <Link to="/signup" onClick={() => setIsOpen(false)}>
+            <Link to="/logout" onClick={() => setIsOpen(false)}>
               <Button
-                className={`w-full transition-all ${
-                  location.pathname === "/signup"
-                    ? "  bg-indigo-600 text-white"
-                    : "bg-white text-indigo-600 "
-                }`}
+                className="w-full border border-red-600 text-red-600 bg-white hover:bg-red-500 hover:text-white transition-all"
               >
-                Sign Up
+                Logout
               </Button>
             </Link>
           </div>

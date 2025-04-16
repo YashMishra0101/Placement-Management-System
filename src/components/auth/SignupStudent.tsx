@@ -71,7 +71,7 @@ interface SignupStudentProps {
   isSubmitting: boolean;
 }
 
-export const SignupStudent = ({ onSubmit, isSubmitting }: SignupStudentProps) => {
+const SignupStudent = ({ onSubmit, isSubmitting }: SignupStudentProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
@@ -531,3 +531,4 @@ export const SignupStudent = ({ onSubmit, isSubmitting }: SignupStudentProps) =>
     </Form>
   );
 };
+export default SignupStudent;

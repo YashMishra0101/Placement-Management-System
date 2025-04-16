@@ -1,197 +1,553 @@
+// import {
+//   Users,
+//   Briefcase,
+//   ChevronLeft,
+//   UserPlus,
+//   Menu,
+//   Eye,
+//   EyeOff,
+//   Layers,
+//   GraduationCap,
+//   Building,
+// } from "lucide-react";
+// import { useState } from "react";
+// import { Button } from "@/components/ui/button";
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// import { Link } from "react-router-dom";
+// import { motion, AnimatePresence } from "framer-motion";
+// import { useToast } from "@/components/ui/use-toast";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
+// import Navbar from "@/components/Navbar";
+// import Footer from "@/components/landing/Footer";
+// import Typewriter from "typewriter-effect";
+
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
+
+// // Import the sign-up pages directly
+// import SignupStudent from "../../components/auth/SignupStudent";
+// import SignupRecruiter from "../../components/auth/SignupRecruiter";
+
+// const AdminDashboard = () => {
+//   const [activeTab, setActiveTab] = useState<
+//     | "students"
+//     | "recruiters"
+//     | "createAdmin"
+//     | "studentSignup"
+//     | "recruiterSignup"
+//   >("students");
+//   const [adminEmail, setAdminEmail] = useState("");
+//   const [adminPassword, setAdminPassword] = useState("");
+//   const [confirmPassword, setConfirmPassword] = useState("");
+//   const [showPassword, setShowPassword] = useState(false);
+//   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+//   const { toast } = useToast();
+
+//   const handleCreateAdmin = () => {
+//     if (adminPassword !== confirmPassword) {
+//       toast({
+//         title: "Error",
+//         description: "Passwords do not match",
+//         variant: "destructive",
+//       });
+//       return;
+//     }
+
+//     toast({
+//       title: "Admin Created",
+//       description: `New admin with email ${adminEmail} has been created successfully.`,
+//     });
+
+//     setAdminEmail("");
+//     setAdminPassword("");
+//     setConfirmPassword("");
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-10">
+//       {/* Navigation Bar - Simplified */}
+//       <nav className="bg-white shadow-md sticky top-0 z-10">
+//         {/* Page Title Section */}
+//         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 shadow-md ">
+//           <h1 className="text-3xl font-extrabold text-center text-white py-3 -mb-1 bg-clip-text text-transparent">
+//             <Typewriter
+//               options={{
+//                 strings: ["Welcome to Admin Panel", "Manage Users Efficiently"],
+//                 autoStart: true,
+//                 loop: true,
+//               }}
+//             />
+//           </h1>
+
+//           <p className="text-center text-white mt-2 text-sm mb-1">
+//             Here you can create and manage student, recruiter, and admin
+//             accounts.
+//           </p>
+//           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+//             <div className="flex items-center">
+//               {activeTab === "students" && (
+//                 <motion.div
+//                   initial={{ opacity: 0, y: 10 }}
+//                   animate={{ opacity: 1, y: 0 }}
+//                   transition={{ duration: 0.3 }}
+//                   className="flex items-center"
+//                 >
+//                   <Users className="h-6 w-6 mr-2" />
+//                   <h1 className="text-xl font-bold">Student Management</h1>
+//                 </motion.div>
+//               )}
+//               {activeTab === "recruiters" && (
+//                 <motion.div
+//                   initial={{ opacity: 0, y: 10 }}
+//                   animate={{ opacity: 1, y: 0 }}
+//                   transition={{ duration: 0.3 }}
+//                   className="flex items-center"
+//                 >
+//                   <Briefcase className="h-6 w-6 mr-2" />
+//                   <h1 className="text-xl font-bold">Recruiter Management</h1>
+//                 </motion.div>
+//               )}
+//               {activeTab === "createAdmin" && (
+//                 <motion.div
+//                   initial={{ opacity: 0, y: 10 }}
+//                   animate={{ opacity: 1, y: 0 }}
+//                   transition={{ duration: 0.3 }}
+//                   className="flex items-center"
+//                 >
+//                   <UserPlus className="h-6 w-6 mr-2" />
+//                   <h1 className="text-xl font-bold">Admin Creation</h1>
+//                 </motion.div>
+//               )}
+//               {activeTab === "studentSignup" && (
+//                 <motion.div
+//                   initial={{ opacity: 0, y: 10 }}
+//                   animate={{ opacity: 1, y: 0 }}
+//                   transition={{ duration: 0.3 }}
+//                   className="flex items-center"
+//                 >
+//                   <GraduationCap className="h-6 w-6 mr-2" />
+//                   <h1 className="text-xl font-bold">Student Registration</h1>
+//                 </motion.div>
+//               )}
+//               {activeTab === "recruiterSignup" && (
+//                 <motion.div
+//                   initial={{ opacity: 0, y: 10 }}
+//                   animate={{ opacity: 1, y: 0 }}
+//                   transition={{ duration: 0.3 }}
+//                   className="flex items-center"
+//                 >
+//                   <Building className="h-6 w-6 mr-2" />
+//                   <h1 className="text-xl font-bold">Recruiter Registration</h1>
+//                 </motion.div>
+//               )}
+//             </div>
+//           </div>
+//         </div>
+
+//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-2 -mb-2">
+//           <div className="flex items-center justify-between">
+//             <Link to="/login" className="pb-2">
+//               <Button variant="outline" className="sm:mr-4" size="sm">
+//                 <ChevronLeft className="h-4 w-4 mt-[0.18rem] -mr-1" />
+//                 <span className="hidden sm:inline">Home</span>
+//               </Button>
+//             </Link>
+//             <div className="hidden sm:flex overflow-x-auto py-2 mx-auto">
+//               {/* Navigation Buttons */}
+//               {[
+//                 {
+//                   key: "studentSignup",
+//                   label: "Create Student Account",
+//                   icon: <GraduationCap className="mr-2 h-4 w-4" />,
+//                 },
+//                 {
+//                   key: "recruiterSignup",
+//                   label: "Create Recruiter Account",
+//                   icon: <Building className="mr-2 h-4 w-4" />,
+//                 },
+//                 {
+//                   key: "students",
+//                   label: "Manage Students",
+//                   icon: <Users className="mr-2 h-4 w-4" />,
+//                 },
+//                 {
+//                   key: "recruiters",
+//                   label: "Manage Recruiters",
+//                   icon: <Briefcase className="mr-2 h-4 w-4" />,
+//                 },
+//                 {
+//                   key: "createAdmin",
+//                   label: "Create Admin",
+//                   icon: <UserPlus className="mr-2 h-4 w-4" />,
+//                 },
+//               ].map(({ key, label, icon }) => (
+//                 <motion.button
+//                   key={key}
+//                   onClick={() => setActiveTab(key)}
+//                   className={`$ {
+//                     activeTab === key
+//                       ? "bg-indigo-50 text-indigo-700 border-indigo-600"
+//                       : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+//                   } flex items-center px-4 py-2 text-sm font-medium rounded-md mr-2 border-b-2 border-transparent transition-all duration-150`}
+//                   whileHover={{ scale: 1.02 }}
+//                   whileTap={{ scale: 0.98 }}
+//                 >
+//                   {icon} {label}
+//                 </motion.button>
+//               ))}
+//             </div>
+
+//             <div className="sm:hidden">
+//               <DropdownMenu>
+//                 <DropdownMenuTrigger asChild>
+//                   <Button variant="outline" size="icon">
+//                     <Menu className="h-4 w-4" />
+//                   </Button>
+//                 </DropdownMenuTrigger>
+//                 <DropdownMenuContent align="end">
+//                   <DropdownMenuItem
+//                     onClick={() => setActiveTab("studentSignup")}
+//                   >
+//                     Create Student Account
+//                   </DropdownMenuItem>
+//                   <DropdownMenuItem
+//                     onClick={() => setActiveTab("recruiterSignup")}
+//                   >
+//                     Create Recruiter Account
+//                   </DropdownMenuItem>
+//                   <DropdownMenuItem onClick={() => setActiveTab("students")}>
+//                     Manage Students
+//                   </DropdownMenuItem>
+//                   <DropdownMenuItem onClick={() => setActiveTab("recruiters")}>
+//                     Manage Recruiters
+//                   </DropdownMenuItem>
+//                   <DropdownMenuItem onClick={() => setActiveTab("createAdmin")}>
+//                     Create Admin
+//                   </DropdownMenuItem>
+//                 </DropdownMenuContent>
+//               </DropdownMenu>
+//             </div>
+//           </div>
+//         </div>
+//       </nav>
+
+//       {/* Main Content */}
+//       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+//         <AnimatePresence mode="wait">
+//           {activeTab === "students" ? (
+//             <motion.div
+//               key="students"
+//               initial={{ opacity: 0, y: 10 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               exit={{ opacity: 0, y: -10 }}
+//               transition={{ duration: 0.3 }}
+//               className="space-y-6"
+//             >
+//               <Card className="border-0 shadow-lg rounded-xl overflow-hidden">
+//                 <CardContent className="p-6">
+//                   <div className="flex items-center justify-center h-40">
+//                     <div className="text-center">
+//                       <Users className="h-12 w-12 mx-auto text-indigo-500 mb-2" />
+//                       <h3 className="text-lg font-medium text-gray-900">
+//                         Student Management
+//                       </h3>
+//                       <p className="text-gray-500 mt-2">
+//                         Student management features coming soon. You'll be able
+//                         to view, edit and manage student profiles.
+//                       </p>
+//                     </div>
+//                   </div>
+//                 </CardContent>
+//               </Card>
+//             </motion.div>
+//           ) : activeTab === "recruiters" ? (
+//             <motion.div
+//               key="recruiters"
+//               initial={{ opacity: 0, y: 10 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               exit={{ opacity: 0, y: -10 }}
+//               transition={{ duration: 0.3 }}
+//               className="space-y-6"
+//             >
+//               <Card className="border-0 shadow-lg rounded-xl overflow-hidden">
+//                 <CardContent className="p-6">
+//                   <div className="flex items-center justify-center h-40">
+//                     <div className="text-center">
+//                       <Briefcase className="h-12 w-12 mx-auto text-teal-500 mb-2" />
+//                       <h3 className="text-lg font-medium text-gray-900">
+//                         Recruiter Management
+//                       </h3>
+//                       <p className="text-gray-500 mt-2">
+//                         Recruiter management features coming soon. You'll be
+//                         able to view, edit and manage recruiter profiles.
+//                       </p>
+//                     </div>
+//                   </div>
+//                 </CardContent>
+//               </Card>
+//             </motion.div>
+//           ) : activeTab === "createAdmin" ? (
+//             <motion.div
+//               key="createAdmin"
+//               initial={{ opacity: 0, y: 10 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               exit={{ opacity: 0, y: -10 }}
+//               transition={{ duration: 0.3 }}
+//               className="space-y-6"
+//             >
+//               <Card className="border-0 shadow-lg rounded-xl overflow-hidden bg-white">
+//                 <CardContent className="p-6">
+//                   <div className="max-w-md mx-auto">
+//                     <div className="text-center mb-6">
+//                       <UserPlus className="h-12 w-12 mx-auto text-indigo-500 mb-2" />
+//                       <h3 className="text-lg font-medium text-gray-900">
+//                         Create New Admin
+//                       </h3>
+//                       <p className="text-gray-500 text-sm">
+//                         Add a new administrator to the system
+//                       </p>
+//                     </div>
+
+//                     <div className="space-y-4">
+//                       <div className="space-y-2">
+//                         <Label htmlFor="email" className="text-sm font-medium">
+//                           Admin Email
+//                         </Label>
+//                         <div className="relative">
+//                           <Input
+//                             id="email"
+//                             type="email"
+//                             placeholder="admin@example.com"
+//                             value={adminEmail}
+//                             onChange={(e) => setAdminEmail(e.target.value)}
+//                             className="h-10 pl-3"
+//                           />
+//                         </div>
+//                       </div>
+
+//                       <div className="space-y-2">
+//                         <Label
+//                           htmlFor="password"
+//                           className="text-sm font-medium"
+//                         >
+//                           Password
+//                         </Label>
+//                         <div className="relative">
+//                           <Input
+//                             id="password"
+//                             type={showPassword ? "text" : "password"}
+//                             placeholder="••••••••"
+//                             value={adminPassword}
+//                             onChange={(e) => setAdminPassword(e.target.value)}
+//                             className="h-10 pl-3 pr-10"
+//                           />
+//                           <button
+//                             type="button"
+//                             onClick={() => setShowPassword(!showPassword)}
+//                             className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+//                           >
+//                             {showPassword ? (
+//                               <EyeOff className="h-4 w-4" />
+//                             ) : (
+//                               <Eye className="h-4 w-4" />
+//                             )}
+//                           </button>
+//                         </div>
+//                       </div>
+
+//                       <div className="space-y-2">
+//                         <Label
+//                           htmlFor="confirmPassword"
+//                           className="text-sm font-medium"
+//                         >
+//                           Confirm Password
+//                         </Label>
+//                         <div className="relative">
+//                           <Input
+//                             id="confirmPassword"
+//                             type={showConfirmPassword ? "text" : "password"}
+//                             placeholder="••••••••"
+//                             value={confirmPassword}
+//                             onChange={(e) => setConfirmPassword(e.target.value)}
+//                             className="h-10 pl-3 pr-10"
+//                           />
+//                           <button
+//                             type="button"
+//                             onClick={() =>
+//                               setShowConfirmPassword(!showConfirmPassword)
+//                             }
+//                             className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+//                           >
+//                             {showConfirmPassword ? (
+//                               <EyeOff className="h-4 w-4" />
+//                             ) : (
+//                               <Eye className="h-4 w-4" />
+//                             )}
+//                           </button>
+//                         </div>
+//                       </div>
+
+//                       <motion.div
+//                         whileHover={{ scale: 1.01 }}
+//                         whileTap={{ scale: 0.99 }}
+//                         className="pt-2"
+//                       >
+//                         <Button
+//                           className="w-full h-10 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+//                           onClick={handleCreateAdmin}
+//                           disabled={
+//                             !adminEmail || !adminPassword || !confirmPassword
+//                           }
+//                         >
+//                           <UserPlus className="mr-2 h-4 w-4" />
+//                           Create Admin Account
+//                         </Button>
+//                       </motion.div>
+//                     </div>
+//                   </div>
+//                 </CardContent>
+//               </Card>
+//             </motion.div>
+//           ) : activeTab === "studentSignup" ? (
+//             <motion.div
+//               key="studentSignup"
+//               initial={{ opacity: 0, y: 10 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               exit={{ opacity: 0, y: -10 }}
+//               transition={{ duration: 0.3 }}
+//               className="space-y-6"
+//             >
+//               <Card className="border-0 shadow-lg rounded-xl overflow-hidden bg-white">
+//                 <CardContent className="p-6">
+//                   <div className="max-w-4xl mx-auto">
+//                     <div className="text-center mb-6">
+//                       <GraduationCap className="h-12 w-12 mx-auto text-blue-500 mb-2" />
+//                       <h3 className="text-lg font-medium text-gray-900">
+//                         Student Registration Form
+//                       </h3>
+//                       <p className="text-gray-500 text-sm">
+//                         Create a new student account
+//                       </p>
+//                     </div>
+
+//                     <SignupStudent
+//                       onSubmit={(data) => {
+//                         toast({
+//                           title: "Student Account Created",
+//                           description: `Student ${data.firstName} ${data.lastName} has been registered successfully.`,
+//                         });
+//                       }}
+//                       isSubmitting={false}
+//                     />
+//                   </div>
+//                 </CardContent>
+//               </Card>
+//             </motion.div>
+//           ) : (
+//             <motion.div
+//               key="recruiterSignup"
+//               initial={{ opacity: 0, y: 10 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               exit={{ opacity: 0, y: -10 }}
+//               transition={{ duration: 0.3 }}
+//               className="space-y-6"
+//             >
+//               <Card className="border-0 shadow-lg rounded-xl overflow-hidden bg-white">
+//                 <CardContent className="p-6">
+//                   <div className="max-w-2xl mx-auto">
+//                     <div className="text-center mb-6">
+//                       <Building className="h-12 w-12 mx-auto text-purple-500 mb-2" />
+//                       <h3 className="text-lg font-medium text-gray-900">
+//                         Recruiter Registration Form
+//                       </h3>
+//                       <p className="text-gray-500 text-sm">
+//                         Create a new recruiter account
+//                       </p>
+//                     </div>
+
+//                     <SignupRecruiter
+//                       onSubmit={(data) => {
+//                         toast({
+//                           title: "Recruiter Account Created",
+//                           description: `${data.companyName} has been registered successfully.`,
+//                         });
+//                       }}
+//                       isSubmitting={false}
+//                     />
+//                   </div>
+//                 </CardContent>
+//               </Card>
+//             </motion.div>
+//           )}
+//         </AnimatePresence>
+//       </main>
+//     </div>
+//   );
+// };
+
+// export default AdminDashboard;
+
+
+
+// src/components/admin/AdminDashboard.tsx
 import {
   Users,
   Briefcase,
-  CheckCircle2,
-  XCircle,
-  Clock,
   ChevronLeft,
   UserPlus,
   Menu,
+  Eye,
+  EyeOff,
+  Layers,
+  GraduationCap,
+  Building,
+  Loader2,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Typewriter from "typewriter-effect";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import SignupStudent from "../../components/auth/SignupStudent";
+import SignupRecruiter from "../../components/auth/SignupRecruiter";
+import { auth, db, createUserWithEmailAndPassword, addDoc, collection } from "@/backend/firebase";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<
-    "students" | "recruiters" | "createAdmin"
+    | "students"
+    | "recruiters"
+    | "createAdmin"
+    | "studentSignup"
+    | "recruiterSignup"
   >("students");
-  const [studentView, setStudentView] = useState<
-    "approved" | "pending" | "rejected"
-  >("approved");
-  const [recruiterView, setRecruiterView] = useState<
-    "approved" | "pending" | "rejected"
-  >("approved");
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const dummyStudents = {
-    approved: [
-      {
-        id: 1,
-        firstName: "Rahul",
-        middleName: "Kumar",
-        lastName: "Sharma",
-        email: "rahul.sharma@example.com",
-        dob: "1999-05-15",
-        tenthPercentage: 92,
-        twelfthPercentage: 88,
-        cgpa: 8.7,
-        branch: "Computer Science",
-        semester: "6",
-        backlogs: 0,
-        appliedDate: "2023-05-10",
-      },
-    ],
-    pending: [
-      {
-        id: 2,
-        firstName: "Priya",
-        middleName: "",
-        lastName: "Patel",
-        email: "priya.patel@example.com",
-        dob: "2000-08-22",
-        tenthPercentage: 89,
-        twelfthPercentage: 85,
-        cgpa: 8.2,
-        branch: "Information Technology",
-        semester: "5",
-        backlogs: 1,
-        appliedDate: "2023-06-15",
-      },
-      {
-        id: 3,
-        firstName: "Amit",
-        middleName: "Singh",
-        lastName: "Verma",
-        email: "amit.verma@example.com",
-        dob: "1999-11-30",
-        tenthPercentage: 85,
-        twelfthPercentage: 80,
-        cgpa: 7.8,
-        branch: "Electronics",
-        semester: "7",
-        backlogs: 0,
-        appliedDate: "2023-06-18",
-      },
-    ],
-    rejected: [
-      {
-        id: 4,
-        firstName: "Neha",
-        middleName: "",
-        lastName: "Gupta",
-        email: "neha.gupta@example.com",
-        dob: "2000-02-20",
-        tenthPercentage: 78,
-        twelfthPercentage: 72,
-        cgpa: 7.2,
-        branch: "Mechanical",
-        semester: "4",
-        backlogs: 2,
-        appliedDate: "2023-05-28",
-      },
-    ],
-  };
-
-  const dummyRecruiters = {
-    approved: [
-      {
-        id: 1,
-        companyName: "Tech Solutions Inc.",
-        email: "hr@techsolutions.com",
-        companyInfo: "Leading tech company specializing in software development",
-        logo: "https://via.placeholder.com/150",
-        appliedDate: "2023-04-12",
-      },
-    ],
-    pending: [
-      {
-        id: 2,
-        companyName: "Data Analytics Co.",
-        email: "contact@dataanalytics.com",
-        companyInfo: "Big data and business intelligence solutions",
-        logo: "https://via.placeholder.com/150",
-        appliedDate: "2023-06-10",
-      },
-      {
-        id: 4,
-        companyName: "Cloud Services Ltd.",
-        email: "info@cloudservices.com",
-        companyInfo: "Cloud infrastructure and managed services",
-        logo: "https://via.placeholder.com/150",
-        appliedDate: "2023-06-20",
-      },
-    ],
-    rejected: [
-      {
-        id: 3,
-        companyName: "Quick Services",
-        email: "contact@quickservices.com",
-        companyInfo: "Temporary staffing solutions",
-        logo: "https://via.placeholder.com/150",
-        appliedDate: "2023-05-15",
-      },
-    ],
-  };
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
+  const [isCreatingStudent, setIsCreatingStudent] = useState(false);
+  const [isCreatingRecruiter, setIsCreatingRecruiter] = useState(false);
 
   const { toast } = useToast();
 
-  const handleStudentAction = (
-    studentId: number,
-    action: "approve" | "reject"
-  ) => {
-    const student = dummyStudents[
-      studentView === "pending"
-        ? "pending"
-        : studentView === "approved"
-        ? "approved"
-        : "rejected"
-    ].find((s) => s.id === studentId);
-
-    toast({
-      title: action === "approve" ? "Student Approved" : "Student Rejected",
-      description: `${student?.firstName} ${student?.lastName} has been ${
-        action === "approve" ? "approved" : "rejected"
-      }.`,
-    });
-  };
-
-  const handleRecruiterAction = (
-    recruiterId: number,
-    action: "approve" | "reject"
-  ) => {
-    const recruiter = dummyRecruiters[
-      recruiterView === "pending"
-        ? "pending"
-        : recruiterView === "approved"
-        ? "approved"
-        : "rejected"
-    ].find((r) => r.id === recruiterId);
-
-    toast({
-      title: action === "approve" ? "Recruiter Approved" : "Recruiter Rejected",
-      description: `${recruiter?.companyName} has been ${
-        action === "approve" ? "approved" : "rejected"
-      }.`,
-    });
-  };
-
-  const handleCreateAdmin = () => {
+  const handleCreateAdmin = async () => {
     if (adminPassword !== confirmPassword) {
       toast({
         title: "Error",
@@ -201,110 +557,252 @@ const AdminDashboard = () => {
       return;
     }
 
-    toast({
-      title: "Admin Created",
-      description: `New admin with email ${adminEmail} has been created successfully.`,
-    });
+    setIsCreatingAdmin(true);
 
-    setAdminEmail("");
-    setAdminPassword("");
-    setConfirmPassword("");
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        adminEmail,
+        adminPassword
+      );
+
+      await addDoc(collection(db, "admins"), {
+        email: adminEmail,
+        createdAt: new Date(),
+        role: "admin",
+        uid: userCredential.user.uid,
+      });
+
+      toast({
+        title: "Admin Created",
+        description: `New admin with email ${adminEmail} has been created successfully.`,
+      });
+
+      setAdminEmail("");
+      setAdminPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+      let errorMessage = "Failed to create admin account";
+      if (error.code === "auth/email-already-in-use") {
+        errorMessage = "Email is already in use";
+      } else if (error.code === "auth/invalid-email") {
+        errorMessage = "Invalid email address";
+      } else if (error.code === "auth/weak-password") {
+        errorMessage = "Password should be at least 6 characters";
+      }
+
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreatingAdmin(false);
+    }
   };
 
-  const StatusBadge = ({
-    status,
-  }: {
-    status: "approved" | "pending" | "rejected";
-  }) => {
-    const config = {
-      approved: {
-        color: "bg-green-100 text-green-800",
-        icon: <CheckCircle2 className="h-4 w-4" />,
-      },
-      pending: {
-        color: "bg-yellow-100 text-yellow-800",
-        icon: <Clock className="h-4 w-4" />,
-      },
-      rejected: {
-        color: "bg-red-100 text-red-800",
-        icon: <XCircle className="h-4 w-4" />,
-      },
-    };
+  const handleStudentSubmit = async (data: any) => {
+    setIsCreatingStudent(true);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
 
-    return (
-      <Badge className={`${config[status].color} gap-1`}>
-        {config[status].icon}
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Badge>
-    );
+      await addDoc(collection(db, "students"), {
+        ...data,
+        uid: userCredential.user.uid,
+        createdAt: new Date(),
+        role: "student",
+        status: "active",
+      });
+
+      toast({
+        title: "Student Created",
+        description: `Student ${data.firstName} ${data.lastName} has been registered successfully.`,
+      });
+    } catch (error: any) {
+      let errorMessage = "Failed to create student account";
+      if (error.code === "auth/email-already-in-use") {
+        errorMessage = "Email is already in use";
+      }
+
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreatingStudent(false);
+    }
+  };
+
+  const handleRecruiterSubmit = async (data: any) => {
+    setIsCreatingRecruiter(true);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+
+      await addDoc(collection(db, "recruiters"), {
+        ...data,
+        uid: userCredential.user.uid,
+        createdAt: new Date(),
+        role: "recruiter",
+        status: "active",
+      });
+
+      toast({
+        title: "Recruiter Created",
+        description: `${data.companyName} has been registered successfully.`,
+      });
+    } catch (error: any) {
+      let errorMessage = "Failed to create recruiter account";
+      if (error.code === "auth/email-already-in-use") {
+        errorMessage = "Email is already in use";
+      }
+
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreatingRecruiter(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Navigation Bar */}
-      <nav className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-10">
+      <nav className="bg-white shadow-md sticky top-0 z-10">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 shadow-md">
+          <h1 className="text-3xl font-extrabold text-center text-white py-3 -mb-1 bg-clip-text text-transparent">
+            <Typewriter
+              options={{
+                strings: ["Welcome to Admin Panel", "Manage Users Efficiently"],
+                autoStart: true,
+                loop: true,
+              }}
+            />
+          </h1>
+
+          <p className="text-center text-white mt-2 text-sm mb-1">
+            Here you can create and manage student, recruiter, and admin accounts.
+          </p>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center">
-              <Link to="/login">
-                <Button variant="outline" className="mr-2 sm:mr-4" size="sm">
-                  <ChevronLeft className="h-4 w-4 mr-1" />
-                  <span className="hidden sm:inline">Back</span>
-                </Button>
-              </Link>
+              {activeTab === "students" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center"
+                >
+                  <Users className="h-6 w-6 mr-2" />
+                  <h1 className="text-xl font-bold">Student Management</h1>
+                </motion.div>
+              )}
+              {activeTab === "recruiters" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center"
+                >
+                  <Briefcase className="h-6 w-6 mr-2" />
+                  <h1 className="text-xl font-bold">Recruiter Management</h1>
+                </motion.div>
+              )}
+              {activeTab === "createAdmin" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center"
+                >
+                  <UserPlus className="h-6 w-6 mr-2" />
+                  <h1 className="text-xl font-bold">Admin Creation</h1>
+                </motion.div>
+              )}
+              {activeTab === "studentSignup" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center"
+                >
+                  <GraduationCap className="h-6 w-6 mr-2" />
+                  <h1 className="text-xl font-bold">Student Registration</h1>
+                </motion.div>
+              )}
+              {activeTab === "recruiterSignup" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center"
+                >
+                  <Building className="h-6 w-6 mr-2" />
+                  <h1 className="text-xl font-bold">Recruiter Registration</h1>
+                </motion.div>
+              )}
             </div>
+          </div>
+        </div>
 
-            <div className="flex-1 flex justify-center sm:justify-start">
-              <motion.span
-                className="text-lg sm:text-xl mx-auto relative md:left-10 font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                Admin Dashboard
-              </motion.span>
-            </div>
-
-            <div className="hidden sm:flex sm:space-x-4 lg:space-x-8">
-              <motion.button
-                onClick={() => setActiveTab("students")}
-                className={`${
-                  activeTab === "students"
-                    ? "border-indigo-500 text-gray-900"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Users className="mr-2 h-5 w-5" />
-                Students
-              </motion.button>
-              <motion.button
-                onClick={() => setActiveTab("recruiters")}
-                className={`${
-                  activeTab === "recruiters"
-                    ? "border-indigo-500 text-gray-900"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Briefcase className="mr-2 h-5 w-5" />
-                Recruiters
-              </motion.button>
-              <motion.button
-                onClick={() => setActiveTab("createAdmin")}
-                className={`${
-                  activeTab === "createAdmin"
-                    ? "border-indigo-500 text-gray-900"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <UserPlus className="mr-2 h-5 w-5" />
-                Create Admin
-              </motion.button>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-2 -mb-2">
+          <div className="flex items-center justify-between">
+            <Link to="/login" className="pb-2">
+              <Button variant="outline" className="sm:mr-4" size="sm">
+                <ChevronLeft className="h-4 w-4 mt-[0.18rem] -mr-1" />
+                <span className="hidden sm:inline">Home</span>
+              </Button>
+            </Link>
+            <div className="hidden sm:flex overflow-x-auto py-2 mx-auto">
+              {[
+                {
+                  key: "studentSignup",
+                  label: "Create Student Account",
+                  icon: <GraduationCap className="mr-2 h-4 w-4" />,
+                },
+                {
+                  key: "recruiterSignup",
+                  label: "Create Recruiter Account",
+                  icon: <Building className="mr-2 h-4 w-4" />,
+                },
+                {
+                  key: "students",
+                  label: "Manage Students",
+                  icon: <Users className="mr-2 h-4 w-4" />,
+                },
+                {
+                  key: "recruiters",
+                  label: "Manage Recruiters",
+                  icon: <Briefcase className="mr-2 h-4 w-4" />,
+                },
+                {
+                  key: "createAdmin",
+                  label: "Create Admin",
+                  icon: <UserPlus className="mr-2 h-4 w-4" />,
+                },
+              ].map(({ key, label, icon }) => (
+                <motion.button
+                  key={key}
+                  onClick={() => setActiveTab(key as any)}
+                  className={`${
+                    activeTab === key
+                      ? "bg-indigo-50 text-indigo-700 border-indigo-600"
+                      : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+                  } flex items-center px-4 py-2 text-sm font-medium rounded-md mr-2 border-b-2 border-transparent transition-all duration-150`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {icon} {label}
+                </motion.button>
+              ))}
             </div>
 
             <div className="sm:hidden">
@@ -315,16 +813,19 @@ const AdminDashboard = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setActiveTab("studentSignup")}>
+                    Create Student Account
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setActiveTab("recruiterSignup")}>
+                    Create Recruiter Account
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setActiveTab("students")}>
-                    <Users className="mr-2 h-4 w-4" />
-                    Students
+                    Manage Students
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setActiveTab("recruiters")}>
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    Recruiters
+                    Manage Recruiters
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setActiveTab("createAdmin")}>
-                    <UserPlus className="mr-2 h-4 w-4" />
                     Create Admin
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -334,8 +835,7 @@ const AdminDashboard = () => {
         </div>
       </nav>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <AnimatePresence mode="wait">
           {activeTab === "students" ? (
             <motion.div
@@ -344,219 +844,21 @@ const AdminDashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              className="space-y-4 sm:space-y-6"
+              className="space-y-6"
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-                {/* Pending Students Card */}
-                <motion.div
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Card
-                    className={`cursor-pointer transition-all ${
-                      studentView === "pending" ? "ring-2 ring-yellow-500" : ""
-                    }`}
-                    onClick={() => setStudentView("pending")}
-                  >
-                    <CardHeader className="bg-gradient-to-r from-yellow-600 to-amber-600 text-white rounded-t-lg p-3 sm:p-4">
-                      <CardTitle className="text-lg sm:text-xl flex justify-between items-center">
-                        <span>Pending</span>
-                        <span className="bg-white text-yellow-600 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm">
-                          {dummyStudents.pending.length}
-                        </span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-3 sm:p-4">
-                      <div className="flex flex-col items-center justify-center h-12 sm:h-16 gap-1 sm:gap-2">
-                        <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500" />
-                        <p className="text-xs sm:text-sm text-gray-600">Under review</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-                {/* Approved Students Card */}
-                <motion.div
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Card
-                    className={`cursor-pointer transition-all ${
-                      studentView === "approved" ? "ring-2 ring-green-500" : ""
-                    }`}
-                    onClick={() => setStudentView("approved")}
-                  >
-                    <CardHeader className="bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-t-lg p-3 sm:p-4">
-                      <CardTitle className="text-lg sm:text-xl flex justify-between items-center">
-                        <span>Approved</span>
-                        <span className="bg-white text-green-600 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm">
-                          {dummyStudents.approved.length}
-                        </span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-3 sm:p-4">
-                      <div className="flex flex-col items-center justify-center h-12 sm:h-16 gap-1 sm:gap-2">
-                        <CheckCircle2 className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
-                        <p className="text-xs sm:text-sm text-gray-600">
-                          Verified students
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-
-                {/* Rejected Students Card */}
-                <motion.div
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Card
-                    className={`cursor-pointer transition-all ${
-                      studentView === "rejected" ? "ring-2 ring-red-500" : ""
-                    }`}
-                    onClick={() => setStudentView("rejected")}
-                  >
-                    <CardHeader className="bg-gradient-to-r from-red-600 to-pink-600 text-white rounded-t-lg p-3 sm:p-4">
-                      <CardTitle className="text-lg sm:text-xl flex justify-between items-center">
-                        <span>Rejected</span>
-                        <span className="bg-white text-red-600 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm">
-                          {dummyStudents.rejected.length}
-                        </span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-3 sm:p-4">
-                      <div className="flex flex-col items-center justify-center h-12 sm:h-16 gap-1 sm:gap-2">
-                        <XCircle className="h-6 w-6 sm:h-8 sm:w-8 text-red-500" />
-                        <p className="text-xs sm:text-sm text-gray-600">Not approved</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </div>
-
-              {/* Student Details */}
-              <Card className="border-0 shadow-lg sm:shadow-xl rounded-lg sm:rounded-xl overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Student
-                          </th>
-                          <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Academic Info
-                          </th>
-                          <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status
-                          </th>
-                          <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Applied On
-                          </th>
-                          <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {dummyStudents[studentView].map((student) => (
-                          <motion.tr
-                            key={student.id}
-                            className="hover:bg-gray-50"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <td className="px-3 sm:px-6 py-3 whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="ml-1 sm:ml-4">
-                                  <div className="text-xs sm:text-sm font-medium text-gray-900">
-                                    {student.firstName} {student.middleName}{" "}
-                                    {student.lastName}
-                                  </div>
-                                  <div className="text-xs sm:text-sm text-gray-500">
-                                    {student.email}
-                                  </div>
-                                  <div className="text-xxs sm:text-xs text-gray-400 mt-0.5 sm:mt-1">
-                                    DOB: {student.dob}
-                                  </div>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-3 sm:px-6 py-3 whitespace-nowrap">
-                              <div className="text-xs sm:text-sm text-gray-900">
-                                {student.branch} (Sem {student.semester})
-                              </div>
-                              <div className="text-xs sm:text-sm text-gray-500">
-                                CGPA: {student.cgpa} | Backlogs:{" "}
-                                {student.backlogs}
-                              </div>
-                            </td>
-                            <td className="px-3 sm:px-6 py-3 whitespace-nowrap">
-                              <StatusBadge status={studentView} />
-                            </td>
-                            <td className="px-3 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500">
-                              {student.appliedDate}
-                            </td>
-                            <td className="px-3 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm font-medium">
-                              <div className="flex gap-1 sm:gap-2">
-                                {studentView === "pending" ? (
-                                  <>
-                                    <Button
-                                      variant="success"
-                                      size="xs"
-                                      className="text-xs"
-                                      onClick={() =>
-                                        handleStudentAction(
-                                          student.id,
-                                          "approve"
-                                        )
-                                      }
-                                    >
-                                      Approve
-                                    </Button>
-                                    <Button
-                                      variant="destructive"
-                                      size="xs"
-                                      className="text-xs"
-                                      onClick={() =>
-                                        handleStudentAction(
-                                          student.id,
-                                          "reject"
-                                        )
-                                      }
-                                    >
-                                      Reject
-                                    </Button>
-                                  </>
-                                ) : studentView === "approved" ? (
-                                  <Button
-                                    variant="destructive"
-                                    size="xs"
-                                    className="text-xs"
-                                    onClick={() =>
-                                      handleStudentAction(student.id, "reject")
-                                    }
-                                  >
-                                    Revoke
-                                  </Button>
-                                ) : (
-                                  <Button
-                                    variant="success"
-                                    size="xs"
-                                    className="text-xs"
-                                    onClick={() =>
-                                      handleStudentAction(student.id, "approve")
-                                    }
-                                  >
-                                    Re-approve
-                                  </Button>
-                                )}
-                              </div>
-                            </td>
-                          </motion.tr>
-                        ))}
-                      </tbody>
-                    </table>
+              <Card className="border-0 shadow-lg rounded-xl overflow-hidden">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-center h-40">
+                    <div className="text-center">
+                      <Users className="h-12 w-12 mx-auto text-indigo-500 mb-2" />
+                      <h3 className="text-lg font-medium text-gray-900">
+                        Student Management
+                      </h3>
+                      <p className="text-gray-500 mt-2">
+                        Student management features coming soon. You'll be able
+                        to view, edit and manage student profiles.
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -568,293 +870,204 @@ const AdminDashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              className="space-y-4 sm:space-y-6"
+              className="space-y-6"
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-                {/* Pending Recruiters Card */}
-                <motion.div
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Card
-                    className={`cursor-pointer transition-all ${
-                      recruiterView === "pending"
-                        ? "ring-2 ring-yellow-500"
-                        : ""
-                    }`}
-                    onClick={() => setRecruiterView("pending")}
-                  >
-                    <CardHeader className="bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-t-lg p-3 sm:p-4">
-                      <CardTitle className="text-lg sm:text-xl flex justify-between items-center">
-                        <span>Pending</span>
-                        <span className="bg-white text-amber-600 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm">
-                          {dummyRecruiters.pending.length}
-                        </span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-3 sm:p-4">
-                      <div className="flex flex-col items-center justify-center h-12 sm:h-16 gap-1 sm:gap-2">
-                        <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500" />
-                        <p className="text-xs sm:text-sm text-gray-600">Under review</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-                {/* Approved Recruiters Card */}
-                <motion.div
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Card
-                    className={`cursor-pointer transition-all ${
-                      recruiterView === "approved"
-                        ? "ring-2 ring-green-500"
-                        : ""
-                    }`}
-                    onClick={() => setRecruiterView("approved")}
-                  >
-                    <CardHeader className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-t-lg p-3 sm:p-4">
-                      <CardTitle className="text-lg sm:text-xl flex justify-between items-center">
-                        <span>Approved</span>
-                        <span className="bg-white text-teal-600 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm">
-                          {dummyRecruiters.approved.length}
-                        </span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-3 sm:p-4">
-                      <div className="flex flex-col items-center justify-center h-12 sm:h-16 gap-1 sm:gap-2">
-                        <CheckCircle2 className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
-                        <p className="text-xs sm:text-sm text-gray-600">
-                          Verified companies
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-
-                {/* Rejected Recruiters Card */}
-                <motion.div
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Card
-                    className={`cursor-pointer transition-all ${
-                      recruiterView === "rejected" ? "ring-2 ring-red-500" : ""
-                    }`}
-                    onClick={() => setRecruiterView("rejected")}
-                  >
-                    <CardHeader className="bg-gradient-to-r from-red-600 to-pink-600 text-white rounded-t-lg p-3 sm:p-4">
-                      <CardTitle className="text-lg sm:text-xl flex justify-between items-center">
-                        <span>Rejected</span>
-                        <span className="bg-white text-red-600 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm">
-                          {dummyRecruiters.rejected.length}
-                        </span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-3 sm:p-4">
-                      <div className="flex flex-col items-center justify-center h-12 sm:h-16 gap-1 sm:gap-2">
-                        <XCircle className="h-6 w-6 sm:h-8 sm:w-8 text-red-500" />
-                        <p className="text-xs sm:text-sm text-gray-600">Not approved</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </div>
-
-              {/* Recruiter Details */}
-              <Card className="border-0 shadow-lg sm:shadow-xl rounded-lg sm:rounded-xl overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Company
-                          </th>
-                          <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Contact
-                          </th>
-                          <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status
-                          </th>
-                          <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Applied On
-                          </th>
-                          <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {dummyRecruiters[recruiterView].map((recruiter) => (
-                          <motion.tr
-                            key={recruiter.id}
-                            className="hover:bg-gray-50"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <td className="px-3 sm:px-6 py-3 whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10">
-                                  <img
-                                    src={recruiter.logo}
-                                    alt={`${recruiter.companyName} logo`}
-                                    className="h-8 w-8 sm:h-10 sm:w-10 rounded-full"
-                                  />
-                                </div>
-                                <div className="ml-2 sm:ml-4">
-                                  <div className="text-xs sm:text-sm font-medium text-gray-900">
-                                    {recruiter.companyName}
-                                  </div>
-                                  <div className="text-xs sm:text-sm text-gray-500 line-clamp-1">
-                                    {recruiter.companyInfo}
-                                  </div>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-3 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500">
-                              {recruiter.email}
-                            </td>
-                            <td className="px-3 sm:px-6 py-3 whitespace-nowrap">
-                              <StatusBadge status={recruiterView} />
-                            </td>
-                            <td className="px-3 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500">
-                              {recruiter.appliedDate}
-                            </td>
-                            <td className="px-3 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm font-medium">
-                              <div className="flex gap-1 sm:gap-2">
-                                {recruiterView === "pending" ? (
-                                  <>
-                                    <Button
-                                      variant="success"
-                                      size="xs"
-                                      className="text-xs"
-                                      onClick={() =>
-                                        handleRecruiterAction(
-                                          recruiter.id,
-                                          "approve"
-                                        )
-                                      }
-                                    >
-                                      Approve
-                                    </Button>
-                                    <Button
-                                      variant="destructive"
-                                      size="xs"
-                                      className="text-xs"
-                                      onClick={() =>
-                                        handleRecruiterAction(
-                                          recruiter.id,
-                                          "reject"
-                                        )
-                                      }
-                                    >
-                                      Reject
-                                    </Button>
-                                  </>
-                                ) : recruiterView === "approved" ? (
-                                  <Button
-                                    variant="destructive"
-                                    size="xs"
-                                    className="text-xs"
-                                    onClick={() =>
-                                      handleRecruiterAction(
-                                        recruiter.id,
-                                        "reject"
-                                      )
-                                    }
-                                  >
-                                    Revoke
-                                  </Button>
-                                ) : (
-                                  <Button
-                                    variant="success"
-                                    size="xs"
-                                    className="text-xs"
-                                    onClick={() =>
-                                      handleRecruiterAction(
-                                        recruiter.id,
-                                        "approve"
-                                      )
-                                    }
-                                  >
-                                    Re-approve
-                                  </Button>
-                                )}
-                              </div>
-                            </td>
-                          </motion.tr>
-                        ))}
-                      </tbody>
-                    </table>
+              <Card className="border-0 shadow-lg rounded-xl overflow-hidden">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-center h-40">
+                    <div className="text-center">
+                      <Briefcase className="h-12 w-12 mx-auto text-teal-500 mb-2" />
+                      <h3 className="text-lg font-medium text-gray-900">
+                        Recruiter Management
+                      </h3>
+                      <p className="text-gray-500 mt-2">
+                        Recruiter management features coming soon. You'll be
+                        able to view, edit and manage recruiter profiles.
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
-          ) : (
+          ) : activeTab === "createAdmin" ? (
             <motion.div
               key="createAdmin"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              className="space-y-4 sm:space-y-6"
+              className="space-y-6"
             >
-              <Card className="border-0 shadow-lg sm:shadow-xl rounded-lg sm:rounded-xl overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-lg p-3 sm:p-4">
-                  <CardTitle className="text-lg sm:text-xl">Create New Admin</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="space-y-3 sm:space-y-4 max-w-md mx-auto">
-                    <div className="space-y-1 sm:space-y-2">
-                      <Label htmlFor="email" className="text-xs sm:text-sm">Admin Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="Enter admin email"
-                        value={adminEmail}
-                        onChange={(e) => setAdminEmail(e.target.value)}
-                        className="text-xs sm:text-sm h-8 sm:h-9"
-                      />
+              <Card className="border-0 shadow-lg rounded-xl overflow-hidden bg-white">
+                <CardContent className="p-6">
+                  <div className="max-w-md mx-auto">
+                    <div className="text-center mb-6">
+                      <UserPlus className="h-12 w-12 mx-auto text-indigo-500 mb-2" />
+                      <h3 className="text-lg font-medium text-gray-900">
+                        Create New Admin
+                      </h3>
+                      <p className="text-gray-500 text-sm">
+                        Add a new administrator to the system
+                      </p>
                     </div>
-                    <div className="space-y-1 sm:space-y-2">
-                      <Label htmlFor="password" className="text-xs sm:text-sm">Password</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        placeholder="Enter password"
-                        value={adminPassword}
-                        onChange={(e) => setAdminPassword(e.target.value)}
-                        className="text-xs sm:text-sm h-8 sm:h-9"
-                      />
-                    </div>
-                    <div className="space-y-1 sm:space-y-2">
-                      <Label htmlFor="confirmPassword" className="text-xs sm:text-sm">Confirm Password</Label>
-                      <Input
-                        id="confirmPassword"
-                        type="password"
-                        placeholder="Confirm password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="text-xs sm:text-sm h-8 sm:h-9"
-                      />
-                    </div>
-                    <motion.div
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                    >
-                      <Button
-                        className="w-full mt-2 sm:mt-4 h-8 sm:h-9"
-                        onClick={handleCreateAdmin}
-                        disabled={
-                          !adminEmail || !adminPassword || !confirmPassword
-                        }
+
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email" className="text-sm font-medium">
+                          Admin Email
+                        </Label>
+                        <div className="relative">
+                          <Input
+                            id="email"
+                            type="email"
+                            placeholder="admin@example.com"
+                            value={adminEmail}
+                            onChange={(e) => setAdminEmail(e.target.value)}
+                            className="h-10 pl-3"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="password" className="text-sm font-medium">
+                          Password
+                        </Label>
+                        <div className="relative">
+                          <Input
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="••••••••"
+                            value={adminPassword}
+                            onChange={(e) => setAdminPassword(e.target.value)}
+                            className="h-10 pl-3 pr-10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword" className="text-sm font-medium">
+                          Confirm Password
+                        </Label>
+                        <div className="relative">
+                          <Input
+                            id="confirmPassword"
+                            type={showConfirmPassword ? "text" : "password"}
+                            placeholder="••••••••"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            className="h-10 pl-3 pr-10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                          >
+                            {showConfirmPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      <motion.div
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                        className="pt-2"
                       >
-                        <UserPlus className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                        <span className="text-xs sm:text-sm">Create Admin Account</span>
-                      </Button>
-                    </motion.div>
+                        <Button
+                          className="w-full h-10 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                          onClick={handleCreateAdmin}
+                          disabled={
+                            !adminEmail || !adminPassword || !confirmPassword || isCreatingAdmin
+                          }
+                        >
+                          {isCreatingAdmin ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Creating...
+                            </>
+                          ) : (
+                            <>
+                              <UserPlus className="mr-2 h-4 w-4" />
+                              Create Admin Account
+                            </>
+                          )}
+                        </Button>
+                      </motion.div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ) : activeTab === "studentSignup" ? (
+            <motion.div
+              key="studentSignup"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <Card className="border-0 shadow-lg rounded-xl overflow-hidden bg-white">
+                <CardContent className="p-6">
+                  <div className="max-w-4xl mx-auto">
+                    <div className="text-center mb-6">
+                      <GraduationCap className="h-12 w-12 mx-auto text-blue-500 mb-2" />
+                      <h3 className="text-lg font-medium text-gray-900">
+                        Student Registration Form
+                      </h3>
+                      <p className="text-gray-500 text-sm">
+                        Create a new student account
+                      </p>
+                    </div>
+
+                    <SignupStudent
+                      onSubmit={handleStudentSubmit}
+                      isSubmitting={isCreatingStudent}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="recruiterSignup"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <Card className="border-0 shadow-lg rounded-xl overflow-hidden bg-white">
+                <CardContent className="p-6">
+                  <div className="max-w-2xl mx-auto">
+                    <div className="text-center mb-6">
+                      <Building className="h-12 w-12 mx-auto text-purple-500 mb-2" />
+                      <h3 className="text-lg font-medium text-gray-900">
+                        Recruiter Registration Form
+                      </h3>
+                      <p className="text-gray-500 text-sm">
+                        Create a new recruiter account
+                      </p>
+                    </div>
+
+                    <SignupRecruiter
+                      onSubmit={handleRecruiterSubmit}
+                      isSubmitting={isCreatingRecruiter}
+                    />
                   </div>
                 </CardContent>
               </Card>

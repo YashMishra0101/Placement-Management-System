@@ -42,10 +42,10 @@ const AboutSection = () => {
             </p>
 
             <div className="flex gap-4">
-              <Link to="/signup">
+              <Link to="/login">
                 <Button variant="outline">Join as Student</Button>
               </Link>
-              <Link to="/signup">
+              <Link to="/login">
                 <Button>Join as Recruiter</Button>
               </Link>
             </div>

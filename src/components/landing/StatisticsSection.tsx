@@ -122,7 +122,7 @@ const StatisticsSection = () => {
           <p className="text-xl text-gray-700 mb-6 max-w-2xl mx-auto">
             Join the hundreds of students who've launched their careers through our placement portal.
           </p>
-          <Link to="/signup">
+          <Link to="/login">
             <Button size="lg" className="px-8 py-6 text-lg font-semibold rounded-full">
               Start Your Journey
             </Button>
