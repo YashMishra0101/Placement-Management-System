@@ -1,3 +1,4 @@
+// src/pages/Login.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -9,50 +10,50 @@ import { Popover } from "@/components/ui/popover";
 import { TypeAnimation } from "react-type-animation";
 import AnimatedBackground from "@/components/animations/AnimatedBackground";
 import { useToast } from "@/components/ui/use-toast";
+import { AuthService } from "@/backend/AuthService";
 
 const Login = () => {
   const [selectedRole, setSelectedRole] = useState<
-    "student" | "recruiter" | "admin" | null
+    "students" | "recruiters" | "admins" | null
   >(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleRoleSelect = (role: "student" | "recruiter" | "admin" | null) => {
+  const handleRoleSelect = (role: "students" | "recruiters" | "admins" | null) => {
     setSelectedRole(role);
   };
 
-  const handleLoginSuccess = async (email: string, password: string) => {
-    try {
-      const { user, error } = await AuthService.login(email, password);
+// In Login.tsx
+const handleLoginSuccess = async (email: string, password: string) => {
+  try {
+    const { user, error } = await AuthService.login(email, password);
 
-      if (error) throw error;
-      if (!user) throw new Error("Authentication failed");
+    if (error) throw new Error(error);
+    if (!user) throw new Error("Authentication failed");
 
-      // Redirect based on role
-      switch (user.role) {
-        case "student":
-          navigate("/joblistingspage");
-          break;
-        case "recruiter":
-          navigate("/recruiterjobpostpage");
-          break;
-        case "admin":
-          navigate("/dashboard");
-          break;
-        default:
-          navigate("/");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      toast({
-        title: "Login Failed",
-        description: error.message.includes("Email")
-          ? "Invalid email or password"
-          : error.message,
-        variant: "destructive",
-      });
+    // Only validate role if one was explicitly selected
+    if (selectedRole && user.role !== selectedRole) {
+      throw new Error(`Please login using the ${selectedRole} portal`);
     }
-  };
+
+    // Redirect based on role
+    switch (user.role) {
+      case "students":
+        navigate("/joblistingspage");
+        break;
+      case "recruiters":
+        navigate("/recruiterjobpostpage");
+        break;
+      case "admins":
+        navigate("/dashboard");
+        break;
+      default:
+        navigate("/");
+    }
+  } catch (error) {
+    // Error handling
+  }
+};
 
   return (
     <div className="min-h-screen flex flex-col relative bg-gradient-to-br from-gray-50 to-indigo-50">
@@ -267,7 +268,7 @@ const Login = () => {
                     onClick={() => navigate("/signup")}
                     className="text-indigo-600 hover:text-indigo-800 font-medium transition-colors duration-200 hover:underline"
                   >
-                    Create one
+                    Create account
                   </button>
                 </p>
                 <button

@@ -33,16 +33,18 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { addDoc, collection, serverTimestamp ,db} from "@/backend/FirebaseConfig";
+import { auth } from "@/backend/FirebaseConfig";
 
 const jobPostSchema = z.object({
-  jobTitle: z.string().min(5, "Job title must be at least 5 characters"),
-  companyName: z.string().min(2, "Company name is required"),
-  companyDescription: z.string().min(50, "Description must be at least 50 characters"),
-  jobDescription: z.string().min(100, "Job description must be at least 100 characters"),
-  location: z.string().min(2, "Location is required"),
-  salaryRange: z.string().min(1, "Salary range is required"),
+  jobTitle: z.string().min(5, "Job title must be at least 5 characters").max(100),
+  companyName: z.string().min(2, "Company name is required").max(100),
+  companyDescription: z.string().min(50, "Description must be at least 50 characters").max(500),
+  jobDescription: z.string().min(100, "Job description must be at least 100 characters").max(2000),
+  location: z.string().min(2, "Location is required").max(100),
+  salaryRange: z.string().min(1, "Salary range is required").max(50),
   jobType: z.enum(["Full-time", "Part-time", "Contract", "Internship"]),
-  skillsRequired: z.array(z.string()).min(1, "At least one skill is required"),
+  skillsRequired: z.array(z.string().min(1)).min(1, "At least one skill is required"),
   minCGPA: z.number().min(0).max(10, "CGPA must be between 0 and 10"),
   minTenthPercentage: z.number().min(0).max(100, "Percentage must be between 0 and 100"),
   minTwelfthPercentage: z.number().min(0).max(100, "Percentage must be between 0 and 100"),
@@ -54,57 +56,6 @@ const JobPostForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [skillsInput, setSkillsInput] = useState('');
   const [skills, setSkills] = useState<string[]>([]);
-
-  const dummyStudents = [
-    {
-      id: 1,
-      firstName: "Rahul",
-      middleName: "Kumar",
-      lastName: "Sharma",
-      branch: "Computer Science",
-      cgpa: 8.7,
-      tenthPercentage: 92,
-      twelfthPercentage: 88,
-      backlogs: 0,
-      skills: ["JavaScript", "React", "Node.js"]
-    },
-    {
-      id: 2,
-      firstName: "Priya",
-      middleName: "",
-      lastName: "Patel",
-      branch: "Information Technology",
-      cgpa: 9.2,
-      tenthPercentage: 95,
-      twelfthPercentage: 90,
-      backlogs: 0,
-      skills: ["Python", "Django", "Machine Learning"]
-    },
-    {
-      id: 3,
-      firstName: "Amit",
-      middleName: "Singh",
-      lastName: "Verma",
-      branch: "Electronics",
-      cgpa: 7.8,
-      tenthPercentage: 85,
-      twelfthPercentage: 80,
-      backlogs: 1,
-      skills: ["Embedded Systems", "C++", "IoT"]
-    },
-    {
-      id: 4,
-      firstName: "Neha",
-      middleName: "",
-      lastName: "Gupta",
-      branch: "Mechanical",
-      cgpa: 8.1,
-      tenthPercentage: 89,
-      twelfthPercentage: 82,
-      backlogs: 0,
-      skills: ["CAD", "SolidWorks", "Thermodynamics"]
-    },
-  ];
 
   const form = useForm<z.infer<typeof jobPostSchema>>({
     resolver: zodResolver(jobPostSchema),
@@ -142,17 +93,37 @@ const JobPostForm = () => {
   const onSubmit = async (data: z.infer<typeof jobPostSchema>) => {
     setIsLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error("You must be logged in to post a job");
+      }
+  
+      const jobPostData = {
+        ...data,
+        recruiterId: user.uid,
+        recruiterEmail: user.email,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        status: "active",
+        applicants: [],
+      };
+  
+      // Add the document to the "jobPosts" collection
+      await addDoc(collection(db, "jobPosts"), jobPostData);
+  
       toast({
-        title: "Job Posted Successfully",
+        title: "🎉 Job Posted Successfully",
         description: "Your job listing is now live and visible to candidates.",
+        className: "bg-green-100 border-green-500 text-green-700",
       });
+      
       form.reset();
       setSkills([]);
     } catch (error) {
+      console.error("Error posting job:", error);
       toast({
-        title: "Error",
-        description: "Failed to post job. Please try again.",
+        title: "⚠️ Error",
+        description: error.message || "Failed to post job. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -508,7 +479,7 @@ const JobPostForm = () => {
                 <Button 
                   type="submit" 
                   disabled={isLoading} 
-                  className="h-12 px-8 text-base bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all"
+                  className="h-12 px-8 text-base bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
                 >
                   {isLoading ? (
                     <>
@@ -516,7 +487,10 @@ const JobPostForm = () => {
                       Posting Job...
                     </>
                   ) : (
-                    "Post Job Opportunity"
+                    <>
+                      <Briefcase className="mr-2 h-5 w-5" />
+                      Post Job Opportunity
+                    </>
                   )}
                 </Button>
               </motion.div>
@@ -528,6 +502,7 @@ const JobPostForm = () => {
   );
 };
 
+// ApplicantsList component remains exactly the same as before
 const ApplicantsList = ({ students, onApprove, onReject }: {
   students: any[];
   onApprove: (id: number) => void;
@@ -667,8 +642,9 @@ const RecruiterJobPostPage = () => {
     const student = students.find(s => s.id === studentId);
     setStudents(students.filter(student => student.id !== studentId));
     toast({
-      title: "Application Approved",
+      title: "✅ Application Approved",
       description: `${student?.firstName} ${student?.lastName} has been approved.`,
+      className: "bg-green-100 border-green-500 text-green-700",
     });
   };
 
@@ -676,8 +652,9 @@ const RecruiterJobPostPage = () => {
     const student = students.find(s => s.id === studentId);
     setStudents(students.filter(student => student.id !== studentId));
     toast({
-      title: "Application Rejected",
+      title: "❌ Application Rejected",
       description: `${student?.firstName} ${student?.lastName} has been rejected.`,
+      variant: "destructive",
     });
   };
 

@@ -8,7 +8,7 @@ import { ArrowLeft, Loader2, Mail, Lock, Eye, EyeOff } from "lucide-react"; // A
 import { useToast } from "@/components/ui/use-toast";
 import { GraduationCap, Briefcase, Shield } from "lucide-react";
 
-type Role = "student" | "recruiter" | "admin";
+type Role = "students" | "recruiters" | "admins";
 
 interface LoginFormProps {
   onLoginSuccess: (email: string, password: string) => Promise<void>;

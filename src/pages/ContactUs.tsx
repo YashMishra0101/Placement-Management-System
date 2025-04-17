@@ -1,3 +1,4 @@
+// src/components/ContactUs.tsx
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,8 @@ import { Mail, User, Phone, Send, CheckCircle2, Loader2, Info } from "lucide-rea
 import { useToast } from "@/components/ui/use-toast";
 import Footer from "@/components/landing/Footer";
 import ParticleBackground from "@/components/ParticleBackground";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "@/backend/FirebaseConfig";
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -53,15 +56,24 @@ const ContactUs = () => {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      // Add the contact form data to Firestore
+      await addDoc(collection(db, "contactSubmissions"), {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        userType: formData.userType,
+        message: formData.message,
+        status: "new", // You can track the status of the submission
+        createdAt: serverTimestamp(), // Adds server-side timestamp
+      });
+
       setIsSubmitted(true);
       toast({
         title: "Message Sent!",
         description: "We've received your message and will get back to you soon.",
       });
     } catch (error) {
+      console.error("Error submitting contact form:", error);
       toast({
         title: "Error",
         description: "Failed to send message. Please try again later.",

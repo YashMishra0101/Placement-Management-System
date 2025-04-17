@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "setup-admin": "node scripts/initAdmin.js",
-    "create-admin": "node createAdmin.js"
+    "create-admin": "node createAdmin.js",
+    "build:migrations": "tsc -p tsconfig.migrations.json",
+  "migrate": "npm run build:migrations && node dist/migrations/migrationRunner.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
