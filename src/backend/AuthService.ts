@@ -1,7 +1,14 @@
 // src/backend/AuthService.ts
 import { auth } from "./FirebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { getDoc, doc } from "firebase/firestore";
+import {
+  getDoc,
+  doc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "./FirebaseConfig";
 
 export interface AuthResponse {
@@ -20,7 +27,11 @@ export const AuthService = {
   login: async (email: string, password: string): Promise<AuthResponse> => {
     try {
       // First, sign in with email and password
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const firebaseUser = userCredential.user;
 
       console.log(`User authenticated with UID: ${firebaseUser.uid}`);
@@ -28,19 +39,27 @@ export const AuthService = {
       // Check in all possible collections for the user
       const collectionsToCheck = ["students", "recruiters", "admins"];
       let userData: UserData | null = null;
-      let role = "";
 
-      // Check each collection sequentially
+      // Check each collection sequentially with a query
+      // In AuthService.ts, modify the login function to return more user data:
       for (const collectionName of collectionsToCheck) {
-        const userDoc = await getDoc(doc(db, collectionName, firebaseUser.uid));
-        if (userDoc.exists()) {
+        const q = query(
+          collection(db, collectionName),
+          where("uid", "==", firebaseUser.uid)
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const doc = querySnapshot.docs[0];
           console.log(`Found user in ${collectionName} collection`);
-          role = collectionName;
+
           userData = {
             uid: firebaseUser.uid,
             email: firebaseUser.email || email,
-            role,
-            status: userDoc.data().status || "active"
+            role: collectionName,
+            status: doc.data().status || "active",
+            ...doc.data(), // Include all user data from the document
           };
           break;
         }
@@ -49,25 +68,28 @@ export const AuthService = {
       if (!userData) {
         console.error("User document not found in any collection:", {
           uid: firebaseUser.uid,
-          email: firebaseUser.email
+          email: firebaseUser.email,
         });
         throw new Error("User data not found. Please contact support.");
       }
 
+      // Rest of your code remains the same...
       // Check if user is blocked
       if (userData.status === "blocked") {
-        throw new Error("Your account has been blocked. Please contact support.");
+        throw new Error(
+          "Your account has been blocked. Please contact support."
+        );
       }
 
       return {
         user: userData,
-        error: null
+        error: null,
       };
     } catch (error: any) {
       console.error("Login error:", error);
-      
+
       let errorMessage = "Login failed. Please try again.";
-      
+
       switch (error.code) {
         case "auth/invalid-email":
           errorMessage = "Invalid email address format.";
@@ -85,17 +107,18 @@ export const AuthService = {
           errorMessage = "Too many login attempts. Please try again later.";
           break;
         case "auth/network-request-failed":
-          errorMessage = "Network error. Please check your internet connection.";
+          errorMessage =
+            "Network error. Please check your internet connection.";
           break;
         default:
           if (error.message) {
             errorMessage = error.message;
           }
       }
-      
+
       return {
         user: null,
-        error: errorMessage
+        error: errorMessage,
       };
     }
   },

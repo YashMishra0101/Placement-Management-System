@@ -1,6 +1,6 @@
 import { User, Building2, ShieldCheck } from "lucide-react";
 
-type Role = "students" | "recruiters" | "admins" | null;
+type Role = "student" | "recruiter" | "admin" | null;
 
 interface RoleIllustrationProps {
   selectedRole: Role;
@@ -12,7 +12,7 @@ const RoleIllustration = ({ selectedRole }: RoleIllustrationProps) => {
       <h2 className="text-3xl font-bold mb-8">Welcome to the Placement Portal</h2>
       
       <div className="relative mx-auto w-48 h-48 mb-8">
-        {selectedRole === "students" && (
+        {selectedRole === "student" && (
           <div className="animate-fade-in">
             <User className="w-full h-full p-8 rounded-full bg-white/20 text-white" />
             <div className="absolute top-0 right-0 w-12 h-12 bg-white/30 rounded-full flex items-center justify-center text-white animate-bounce">
@@ -22,7 +22,7 @@ const RoleIllustration = ({ selectedRole }: RoleIllustrationProps) => {
             </div>
           </div>
         )}
-        {selectedRole === "recruiters" && (
+        {selectedRole === "recruiter" && (
           <div className="animate-fade-in">
             <Building2 className="w-full h-full p-8 rounded-full bg-white/20 text-white" />
             <div className="absolute top-0 right-0 w-12 h-12 bg-white/30 rounded-full flex items-center justify-center text-white animate-bounce">
@@ -32,7 +32,7 @@ const RoleIllustration = ({ selectedRole }: RoleIllustrationProps) => {
             </div>
           </div>
         )}
-        {selectedRole === "admins" && (
+        {selectedRole === "admin" && (
           <div className="animate-fade-in">
             <ShieldCheck className="w-full h-full p-8 rounded-full bg-white/20 text-white" />
             <div className="absolute top-0 right-0 w-12 h-12 bg-white/30 rounded-full flex items-center justify-center text-white animate-bounce">

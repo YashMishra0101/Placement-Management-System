@@ -11,7 +11,8 @@ import {
   deleteDoc,
   query,
   where,
-  serverTimestamp
+  serverTimestamp,
+  onSnapshot,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -39,5 +40,6 @@ export {
   deleteDoc,
   query,
   where,
-  serverTimestamp
+  serverTimestamp,
+  onSnapshot,
 };

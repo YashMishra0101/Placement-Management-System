@@ -1,59 +1,263 @@
-// src/pages/Login.tsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Loader2,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  GraduationCap,
+  Briefcase,
+  Shield,
+} from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { AuthService } from "@/backend/AuthService";
+import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/landing/Footer";
-import LoginForm from "@/components/auth/LoginForm";
-import RoleIllustration from "@/components/auth/RoleIllustration";
 import { motion, AnimatePresence } from "framer-motion";
 import { Popover } from "@/components/ui/popover";
 import { TypeAnimation } from "react-type-animation";
 import AnimatedBackground from "@/components/animations/AnimatedBackground";
-import { useToast } from "@/components/ui/use-toast";
-import { AuthService } from "@/backend/AuthService";
+
+const RoleIllustration = ({
+  selectedRole,
+}: {
+  selectedRole: string | null;
+}) => {
+  // Your RoleIllustration implementation here
+  return <div>{/* Illustration content */}</div>;
+};
+
+const RoleSelector = ({
+  onRoleSelect,
+  selectedRole,
+}: {
+  onRoleSelect: (role: string | null) => void;
+  selectedRole: string | null;
+}) => {
+  const roleIcons = {
+    students: <GraduationCap className="w-5 h-5 mr-2" />,
+    recruiters: <Briefcase className="w-5 h-5 mr-2" />,
+    admins: <Shield className="w-5 h-5 mr-2" />,
+  };
+
+  return (
+    <div className="space-y-4">
+      <h3 className="text-center font-medium">Select your role</h3>
+      <div className="flex justify-center gap-4">
+        {(["students", "recruiters", "admins"] as const).map((role) => (
+          <button
+            key={role}
+            type="button"
+            onClick={() => onRoleSelect(role)}
+            className={`flex items-center px-4 py-3 rounded-xl border transition-all text-base ${
+              selectedRole === role
+                ? "border-indigo-600 bg-indigo-100 text-indigo-700 font-semibold shadow-md"
+                : "border-gray-300 hover:border-indigo-400 hover:bg-indigo-50 text-gray-700"
+            }`}
+          >
+            {roleIcons[role]}
+            {role.charAt(0).toUpperCase() + role.slice(1)}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const LoginForm = ({
+  onLoginSuccess,
+  onRoleSelect,
+  selectedRole,
+}: {
+  onLoginSuccess: (email: string, password: string) => Promise<void>;
+  onRoleSelect: (role: string | null) => void;
+  selectedRole: string | null;
+}) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedRole) {
+      toast({
+        title: "Error",
+        description: "Please select a role.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!email || !password) {
+      toast({
+        title: "Error",
+        description: "Please fill in all fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await onLoginSuccess(email, password);
+    } catch (error: any) {
+      toast({
+        title: "Login Failed",
+        description: error.message || "Invalid credentials",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <RoleSelector onRoleSelect={onRoleSelect} selectedRole={selectedRole} />
+
+      {selectedRole && (
+        <div className="space-y-4 mt-6">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="pl-10"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <Label htmlFor="password">Password</Label>
+              <Link
+                to="/forgot-password"
+                className="text-sm text-indigo-600 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-10 pr-10"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="remember"
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(!!checked)}
+              />
+              <Label htmlFor="remember">Remember me</Label>
+            </div>
+          </div>
+
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Logging in...
+              </>
+            ) : (
+              "Login"
+            )}
+          </Button>
+        </div>
+      )}
+    </form>
+  );
+};
 
 const Login = () => {
   const [selectedRole, setSelectedRole] = useState<
-    "students" | "recruiters" | "admins" | null
+    "student" | "recruiter" | "admin" | null
   >(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login } = useAuth();
 
-  const handleRoleSelect = (role: "students" | "recruiters" | "admins" | null) => {
+  const handleRoleSelect = (
+    role: "student" | "recruiter" | "admin" | null
+  ) => {
     setSelectedRole(role);
   };
+  const handleLoginSuccess = async (email: string, password: string) => {
+    try {
+      // Use only one authentication method - the AuthService login
+      const { user, error } = await AuthService.login(email, password);
 
-// In Login.tsx
-const handleLoginSuccess = async (email: string, password: string) => {
-  try {
-    const { user, error } = await AuthService.login(email, password);
+      if (error) throw new Error(error);
+      if (!user) throw new Error("Authentication failed");
 
-    if (error) throw new Error(error);
-    if (!user) throw new Error("Authentication failed");
+      // Update auth context with the user data - this will also set localStorage
+      login(user);
 
-    // Only validate role if one was explicitly selected
-    if (selectedRole && user.role !== selectedRole) {
-      throw new Error(`Please login using the ${selectedRole} portal`);
+      toast({
+        title: "Login Successful",
+        description: `Welcome, ${user.email}`,
+        variant: "default",
+      });
+
+      // Navigate based on role
+      switch (user.role) {
+        case "student":
+          navigate("/joblistingspage");
+          break;
+        case "recruiter":
+          navigate("/recruiterjobpostpage");
+          break;
+        case "admin":
+          navigate("/dashboard");
+          break;
+        default:
+          navigate("/");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Login Failed",
+        description: error.message || "Invalid credentials",
+        variant: "destructive",
+      });
+      console.error("Login error:", error);
     }
-
-    // Redirect based on role
-    switch (user.role) {
-      case "students":
-        navigate("/joblistingspage");
-        break;
-      case "recruiters":
-        navigate("/recruiterjobpostpage");
-        break;
-      case "admins":
-        navigate("/dashboard");
-        break;
-      default:
-        navigate("/");
-    }
-  } catch (error) {
-    // Error handling
-  }
-};
+  };
 
   return (
     <div className="min-h-screen flex flex-col relative bg-gradient-to-br from-gray-50 to-indigo-50">
@@ -83,6 +287,7 @@ const handleLoginSuccess = async (email: string, password: string) => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 items-stretch bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-gray-100/80">
             {/* Left side - illustration with gradient background */}
             <div className="hidden lg:flex flex-col h-full bg-gradient-to-br from-indigo-600 via-purple-600 to-violet-600 p-8 text-white relative overflow-hidden">
+              {/* Background animations */}
               <div className="absolute top-0 left-0 w-full h-full opacity-10">
                 <motion.div
                   className="absolute top-10 left-10 w-24 h-24 rounded-full bg-white"
