@@ -10,7 +10,7 @@ import {
   AlertCircle,
   Clock as PendingIcon,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect ,useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +19,8 @@ import { TypeAnimation } from "react-type-animation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/landing/Footer";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from 'sonner'; // Add this import at the top of your file
+
 import {
   collection,
   query,
@@ -237,79 +239,111 @@ const JobListingsPage = () => {
     setShowApplicationForm(jobId);
   };
 
-  const handleSubmitApplication = async (jobId: string) => {
-    try {
-      const user = auth.currentUser;
-      if (!user) throw new Error("Not authenticated");
   
-      const job = jobs.find((j) => j.id === jobId);
-      if (!job) throw new Error("Job not found");
-  
-      // Create a clean student profile object without undefined values
-      const cleanStudentProfile = {
-        firstName: studentProfile?.firstName,
-        lastName: studentProfile?.lastName,
-        middleName: studentProfile?.middleName,
-        email: studentProfile?.email,
-        phone: studentProfile?.phone,
-        gender: studentProfile?.gender,
-        dob: studentProfile?.dob,
-        tenthPercentage: studentProfile?.tenthPercentage,
-        twelfthPercentage: studentProfile?.twelfthPercentage,
-        cgpa: studentProfile?.cgpa,
-        branch: studentProfile?.branch,
-        semester: studentProfile?.semester,
-        backlogs: studentProfile?.backlogs,
-        // Explicitly exclude sensitive fields
-        // password and confirmPassword are omitted
-      };
-  
-      const applicationData = {
-        jobId,
-        jobTitle: job.jobTitle,
-        companyName: job.companyName,
-        studentId: user.uid,
-        studentName: `${studentProfile?.firstName} ${studentProfile?.lastName}`,
-        studentEmail: studentProfile?.email,
-        status: "pending",
-        appliedAt: serverTimestamp(),
-        internshipCount,
-        internshipMonths,
-        hasProjects,
-        projects: hasProjects === "Yes" ? projects : [],
-        studentProfile: cleanStudentProfile, // Use the cleaned profile
-      };
-  
-      console.log("Submitting application:", applicationData);
-  
-      // Add to applications collection
-      const applicationRef = await addDoc(collection(db, "applications"), applicationData);
-  
-      // Add to job's applicants subcollection
-      await addDoc(collection(db, "jobPosts", jobId, "applicants"), {
-        studentId: user.uid,
-        applicationId: applicationRef.id,
-        status: "pending",
-        appliedAt: serverTimestamp(),
+const handleSubmitApplication = async (jobId: string) => {
+  // Show loading toast
+  const toastId = toast.loading('Submitting your application...', {
+    description: 'Please wait while we process your application'
+  });
+
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      toast.error('Authentication required', {
+        description: 'Please sign in to apply for jobs'
       });
-  
-      setShowApplicationForm(null);
-      // Reset form fields
-      setInternshipCount("0");
-      setInternshipMonths("0");
-      setHasProjects("No");
-      setProjects([
-        { link: "", description: "" },
-        { link: "", description: "" },
-        { link: "", description: "" },
-      ]);
-  
-    } catch (error) {
-      console.error("Error submitting application:", error);
-      // You might want to add user feedback here
-      // e.g., toast notification or error message in the UI
+      throw new Error("Not authenticated");
     }
-  };
+
+    const job = jobs.find((j) => j.id === jobId);
+    if (!job) {
+      toast.error('Job not found', {
+        description: 'The job you are trying to apply for does not exist'
+      });
+      throw new Error("Job not found");
+    }
+
+    // Create a clean student profile object
+    const cleanStudentProfile = {
+      firstName: studentProfile?.firstName,
+      lastName: studentProfile?.lastName,
+      middleName: studentProfile?.middleName,
+      email: studentProfile?.email,
+      phone: studentProfile?.phone,
+      gender: studentProfile?.gender,
+      dob: studentProfile?.dob,
+      tenthPercentage: studentProfile?.tenthPercentage,
+      twelfthPercentage: studentProfile?.twelfthPercentage,
+      cgpa: studentProfile?.cgpa,
+      branch: studentProfile?.branch,
+      semester: studentProfile?.semester,
+      backlogs: studentProfile?.backlogs,
+    };
+
+    const applicationData = {
+      jobId,
+      jobTitle: job.jobTitle,
+      companyName: job.companyName,
+      studentId: user.uid,
+      studentName: `${studentProfile?.firstName} ${studentProfile?.lastName}`,
+      studentEmail: studentProfile?.email,
+      status: "pending",
+      appliedAt: serverTimestamp(),
+      internshipCount,
+      internshipMonths,
+      hasProjects,
+      projects: hasProjects === "Yes" ? projects : [],
+      studentProfile: cleanStudentProfile,
+    };
+
+    // Add to applications collection
+    const applicationRef = await addDoc(collection(db, "applications"), applicationData);
+
+    // Add to job's applicants subcollection
+    await addDoc(collection(db, "jobPosts", jobId, "applicants"), {
+      studentId: user.uid,
+      applicationId: applicationRef.id,
+      status: "pending",
+      appliedAt: serverTimestamp(),
+    });
+
+    // Update toast to success
+    toast.success('Application submitted successfully!', {
+      id: toastId,
+      description: `You've applied for ${job.jobTitle} at ${job.companyName}`,
+      action: {
+        label: 'View Applications',
+        onClick: () => setActiveTab('applied')
+      },
+      duration: 10000 // Show for 10 seconds
+    });
+
+    setShowApplicationForm(null);
+    // Reset form fields
+    setInternshipCount("0");
+    setInternshipMonths("0");
+    setHasProjects("No");
+    setProjects([
+      { link: "", description: "" },
+      { link: "", description: "" },
+      { link: "", description: "" },
+    ]);
+
+  } catch (error) {
+    console.error("Error submitting application:", error);
+    
+    // Update toast to error
+    toast.error('Failed to submit application', {
+      id: toastId,
+      description: error instanceof Error ? error.message : 'An unexpected error occurred',
+      action: {
+        label: 'Try Again',
+        onClick: () => handleSubmitApplication(jobId)
+      },
+      duration: 10000
+    });
+  }
+};
 
   const toggleExpand = (jobId: string) => {
     setExpandedJob(expandedJob === jobId ? null : jobId);
@@ -323,11 +357,11 @@ const JobListingsPage = () => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "selected":
+      case "approved":  // Changed from "selected" to "approved"
         return (
           <Badge className="bg-green-100 text-green-800 text-xs sm:text-sm">
             <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-            Selected
+            Approved
           </Badge>
         );
       case "rejected":
@@ -380,15 +414,22 @@ const JobListingsPage = () => {
   const availableJobs = jobs.filter(
     (job) => !applications.some((app) => app.jobId === job.id)
   );
-  const appliedJobs = applications.map((app) => {
-    const job = jobs.find((j) => j.id === app.jobId);
-    return { ...app, ...job };
-  });
+  const appliedJobs = useMemo(() => {
+    return applications.map((app) => {
+      const job = jobs.find((j) => j.id === app.jobId);
+      return { 
+        ...app, 
+        ...job,
+        // Ensure status comes from the application, not the job
+        status: app.status 
+      };
+    });
+  }, [applications, jobs]);
 
   const getProfileImage = () => {
     return studentProfile?.gender === "Female"
-      ? "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
-      : "https://cdn-icons-png.flaticon.com/512/4140/4140047.png";
+      ? "https://cdn-icons-png.flaticon.com/512/4140/4140047.png"
+      : "https://cdn-icons-png.flaticon.com/512/4140/4140048.png";
   };
 
   if (loading.profile || !studentProfile) {

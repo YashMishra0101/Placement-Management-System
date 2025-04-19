@@ -23,20 +23,38 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Loader2,
   Briefcase,
-  Users,
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  BookOpen,
   CheckCircle2,
   XCircle,
+  ChevronDown,
+  ChevronUp,
+  GraduationCap,
+  Layers,
+  Award,
+  FileText,
+  Globe,
+  Github,
+  Linkedin,
+  Twitter,
+  ExternalLink,
+  Loader2,
   Plus,
+  Users, // Add this import
+  Trash2, // Also add this since it's used in the ManageJobs component
+  Menu, // Add this for the mobile menu
+  List, // Add this for the manage jobs tab
   X,
-  Menu,
-  Trash2,
-  List,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
+import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sheet,
   SheetContent,
@@ -52,14 +70,74 @@ import {
   where,
   getDocs,
   onSnapshot,
-  db,
   deleteDoc,
   doc,
+  updateDoc,
+  db,
 } from "@/backend/FirebaseConfig";
 import { auth } from "@/backend/FirebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 
+interface Application {
+  id: string;
+  jobId: string;
+  jobTitle: string;
+  companyName: string;
+  studentId: string;
+  studentName: string;
+  studentEmail: string;
+  studentPhone?: string;
+  status: "pending" | "approved" | "rejected";
+  appliedAt: Date | null;
+  updatedAt?: Date | null;
+  internshipCount?: number;
+  internshipMonths?: number;
+  hasProjects?: boolean;
+  projects?: Array<{
+    title?: string;
+    description: string;
+    link?: string;
+    technologies?: string[];
+  }>;
+  studentProfile?: {
+    firstName?: string;
+    lastName?: string;
+    middleName?: string;
+    gender?: string;
+    dob?: Date | string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    postalCode?: string;
+    bio?: string;
+    cgpa?: number | string;
+    tenthPercentage?: number | string;
+    twelfthPercentage?: number | string;
+    branch?: string;
+    semester?: number | string;
+    backlogs?: number;
+    skills?: string[];
+    certifications?: Array<{
+      name: string;
+      issuer: string;
+      date: Date | string;
+      credentialId?: string;
+      url?: string;
+    }>;
+    socialLinks?: {
+      github?: string;
+      linkedin?: string;
+      twitter?: string;
+      portfolio?: string;
+    };
+    resumeUrl?: string;
+  };
+}
 
+// Zod schema for job post validation
 const jobPostSchema = z.object({
   jobTitle: z
     .string()
@@ -78,7 +156,7 @@ const jobPostSchema = z.object({
   salaryRange: z.string().min(1, "Salary range is required").max(50),
   jobType: z.enum(["Full-time", "Part-time", "Contract", "Internship"]),
   skillsRequired: z
-    .array(z.string().min(1))
+    .array(z.string().min(1, "Skill cannot be empty"))
     .min(1, "At least one skill is required"),
   minCGPA: z.number().min(0).max(10, "CGPA must be between 0 and 10"),
   minTenthPercentage: z
@@ -92,9 +170,11 @@ const jobPostSchema = z.object({
   maxBacklogs: z.number().min(0, "Backlogs cannot be negative"),
 });
 
+// Job Post Form Component
 const JobPostForm = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+
   const [skillsInput, setSkillsInput] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
 
@@ -120,7 +200,7 @@ const JobPostForm = () => {
     if (skillsInput.trim() && !skills.includes(skillsInput.trim())) {
       const newSkills = [...skills, skillsInput.trim()];
       setSkills(newSkills);
-      form.setValue("skillsRequired", newSkills);
+      form.setValue("skillsRequired", newSkills); // Update form value
       setSkillsInput("");
     }
   };
@@ -128,7 +208,7 @@ const JobPostForm = () => {
   const removeSkill = (skillToRemove: string) => {
     const newSkills = skills.filter((skill) => skill !== skillToRemove);
     setSkills(newSkills);
-    form.setValue("skillsRequired", newSkills);
+    form.setValue("skillsRequired", newSkills); // Update form value
   };
 
   const onSubmit = async (data: z.infer<typeof jobPostSchema>) => {
@@ -146,7 +226,6 @@ const JobPostForm = () => {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         status: "active",
-        applicants: [],
       };
 
       await addDoc(collection(db, "jobPosts"), jobPostData);
@@ -417,7 +496,8 @@ const JobPostForm = () => {
                             onClick={() => removeSkill(skill)}
                             className="text-gray-500 hover:text-red-500 transition-colors"
                           >
-                            <X size={14} />
+                            <X size={14} />{" "}
+                            {/* This is where the error occurs */}
                           </button>
                         </Badge>
                       </motion.div>
@@ -589,141 +669,343 @@ const JobPostForm = () => {
   );
 };
 
-const ApplicantsList = ({
-  students,
-  onApprove,
-  onReject,
+// Updated ApplicantDetails component
+const ApplicantDetails = ({
+  application,
+  onStatusChange,
 }: {
-  students: any[];
-  onApprove: (id: number) => void;
-  onReject: (id: number) => void;
+  application: Application;
+  onStatusChange: (
+    id: string,
+    status: "approved" | "rejected"
+  ) => Promise<void>;
 }) => {
+  const [expanded, setExpanded] = useState(false);
+  const profile = application.studentProfile || {};
+  const appliedDate =
+    application.appliedAt?.toLocaleDateString() || "Not available";
+  const updatedDate =
+    application.updatedAt?.toLocaleDateString() || "Not updated";
+  const dobDate =
+    profile.dob instanceof Date
+      ? profile.dob.toLocaleDateString()
+      : profile.dob || "Not provided";
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <Card className="border-0 shadow-xl rounded-2xl overflow-hidden bg-white/90 backdrop-blur-sm">
-        <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-8">
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <CardTitle className="text-2xl md:text-3xl font-bold">
-              Student Applications
-            </CardTitle>
-            <p className="text-indigo-100 mt-2">
-              {students.length}{" "}
-              {students.length === 1 ? "applicant" : "applicants"} found
-            </p>
-          </motion.div>
-        </CardHeader>
-        <CardContent className="p-6 md:p-8">
-          <div className="space-y-6">
-            {students.length > 0 ? (
-              <AnimatePresence>
-                {students.map((student) => (
-                  <motion.div
-                    key={student.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-800">
-                          {student.firstName} {student.lastName}
-                        </h3>
-                        <p className="text-gray-600 mt-1">{student.email}</p>
-                        <div className="flex flex-wrap gap-2 mt-3">
-                          <Badge variant="outline" className="text-sm">
-                            CGPA: {student.cgpa}
-                          </Badge>
-                          <Badge variant="outline" className="text-sm">
-                            10th: {student.tenthPercentage}%
-                          </Badge>
-                          <Badge variant="outline" className="text-sm">
-                            12th: {student.twelfthPercentage}%
-                          </Badge>
-                          <Badge variant="outline" className="text-sm">
-                            Backlogs: {student.backlogs}
-                          </Badge>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onApprove(student.id)}
-                          className="text-green-500 hover:text-green-600 hover:bg-green-50"
-                        >
-                          <CheckCircle2 size={18} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onReject(student.id)}
-                          className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                        >
-                          <XCircle size={18} />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="mt-4">
-                      <p className="text-gray-700">{student.coverLetter}</p>
-                    </div>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {student.skills.map((skill: string) => (
-                        <Badge
-                          key={skill}
-                          variant="secondary"
-                          className="px-3 py-1 text-sm rounded-full"
-                        >
-                          {skill}
-                        </Badge>
-                      ))}
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            ) : (
-              <motion.div
-                className="text-center py-12"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <div className="mx-auto h-24 w-24 rounded-full bg-gray-100 flex items-center justify-center mb-6">
-                  <Users className="h-12 w-12 text-gray-400" />
+    <Card className="mb-6">
+      <CardHeader className="pb-4">
+        <div className="flex justify-between items-start">
+          <div className="flex items-center space-x-4">
+            <Avatar className="h-16 w-16">
+              <AvatarImage
+                src={
+                  profile.gender === "Female"
+                    ? "https://cdn-icons-png.flaticon.com/512/4140/4140047.png"
+                    : "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
+                }
+              />
+              <AvatarFallback>
+                {profile.firstName?.[0]}
+                {profile.lastName?.[0]}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <CardTitle className="text-xl">
+                {profile.firstName} {profile.middleName} {profile.lastName}
+              </CardTitle>
+              <div className="flex items-center text-sm text-gray-600 mt-1">
+                <Mail className="h-4 w-4 mr-1" />
+                <span>{application.studentEmail}</span>
+              </div>
+              {profile.phone && (
+                <div className="flex items-center text-sm text-gray-600 mt-1">
+                  <Phone className="h-4 w-4 mr-1" />
+                  <span>{profile.phone}</span>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  No applicants found
-                </h3>
-                <p className="text-gray-600 max-w-md mx-auto">
-                  Students who apply to your jobs will appear here. Check back
-                  later or share your job postings.
-                </p>
-              </motion.div>
+              )}
+            </div>
+          </div>
+          <Badge
+            variant={
+              application.status === "approved"
+                ? "default"
+                : application.status === "rejected"
+                ? "destructive"
+                : "secondary"
+            }
+            className="text-sm"
+          >
+            {application.status}
+          </Badge>
+        </div>
+        <div className="mt-4 bg-blue-50 p-3 rounded-lg">
+          <h3 className="font-semibold text-blue-800 flex items-center">
+            <Briefcase className="h-4 w-4 mr-2" />
+            Applied for:{" "}
+            <span className="ml-1 font-bold text-blue-900">
+              {application.jobTitle}
+            </span>
+            <span className="text-sm text-blue-700 mt-1">
+              {" ,"} at {application.companyName}
+            </span>
+          </h3>
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        {/* Basic Info Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          <div className="space-y-2">
+            <h3 className="font-medium flex items-center">
+              <User className="h-4 w-4 mr-2" />
+              Personal Details
+            </h3>
+            <div className="text-sm">
+              <p>
+                <span className="text-gray-500">Gender:</span>{" "}
+                {profile.gender || "Not provided"}
+              </p>
+              <p>
+                <span className="text-gray-500">DOB:</span> {dobDate}
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="font-medium flex items-center">
+              <GraduationCap className="h-4 w-4 mr-2" />
+              Education
+            </h3>
+            <div className="text-sm">
+              <p>
+                <span className="text-gray-500">Branch:</span>{" "}
+                {profile.branch || "Not provided"}
+              </p>
+              <p>
+                <span className="text-gray-500">Semester:</span>{" "}
+                {profile.semester || "Not provided"}
+              </p>
+              <p>
+                <span className="text-gray-500">CGPA:</span>{" "}
+                {profile.cgpa || "Not provided"}
+              </p>
+              <p>
+                <span className="text-gray-500">Backlogs:</span>{" "}
+                {profile.backlogs ?? "Not provided"}
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="font-medium flex items-center">
+              <BookOpen className="h-4 w-4 mr-2" />
+              Academic History
+            </h3>
+            <div className="text-sm">
+              <p>
+                <span className="text-gray-500">10th %:</span>{" "}
+                {profile.tenthPercentage || "Not provided"}
+              </p>
+              <p>
+                <span className="text-gray-500">12th %:</span>{" "}
+                {profile.twelfthPercentage || "Not provided"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Professional Experience Section */}
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div>
+            <h3 className="font-medium flex items-center mb-2">
+              <Briefcase className="h-4 w-4 mr-2" />
+              Internships Completed
+            </h3>
+            <div className="text-sm">
+              <span className="text-gray-500">Total Internships :</span>{" "}
+              {application.internshipCount || "0"}
+            </div>
+          </div>
+          <div>
+            <h3 className="font-medium flex items-center mb-2">
+              <Calendar className="h-4 w-4 mr-2" />
+              Internship Experience
+            </h3>
+            <div className="text-sm">
+              <span className="text-gray-500">
+                Toatal Internship Experience:
+              </span>{" "}
+              {application.internshipMonths || "0"} months
+            </div>
+          </div>
+          <div>
+            <h3 className="font-medium flex items-center mb-2">
+              <Calendar className="h-4 w-4 mr-2" />
+              Application Timeline
+            </h3>
+            <div className="text-sm">
+              <span className="text-gray-500">Applied:</span> {appliedDate}
+            </div>
+          </div>
+        </div>
+
+        {/* Projects Section */}
+        {application.projects?.length ? (
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-medium flex items-center">
+                <Layers className="h-4 w-4 mr-2" />
+                Projects ({application.projects.length})
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setExpanded(!expanded)}
+                className="text-sm"
+              >
+                {expanded ? (
+                  <>
+                    <ChevronUp className="h-4 w-4 mr-1" />
+                    Collapse
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="h-4 w-4 mr-1" />
+                    Expand
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {expanded && (
+              <div className="space-y-4">
+                {application.projects.map((project, index) => (
+                  <Card key={index} className="p-4">
+                    <div className="space-y-2">
+                      {project.title && (
+                        <h4 className="font-medium">{project.title}</h4>
+                      )}
+                      <p className="text-sm">{project.description}</p>
+                      {project.technologies?.length ? (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {project.technologies.map((tech, i) => (
+                            <Badge
+                              key={i}
+                              variant="secondary"
+                              className="text-xs"
+                            >
+                              {tech}
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : null}
+                      {project.link && (
+                        <a
+                          href={project.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center text-sm text-blue-600 hover:underline mt-2"
+                        >
+                          <ExternalLink className="h-3 w-3 mr-1" />
+                          View Project
+                        </a>
+                      )}
+                    </div>
+                  </Card>
+                ))}
+              </div>
             )}
           </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+        ) : null}
+
+        {/* Action Buttons */}
+        <div className="flex justify-end pt-4 border-t">
+          <div className="space-x-2">
+            <Button
+              variant="destructive"
+              onClick={() => onStatusChange(application.id, "rejected")}
+              disabled={application.status === "rejected"}
+            >
+              <XCircle className="h-4 w-4 mr-2" />
+              Reject
+            </Button>
+            <Button
+              onClick={() => onStatusChange(application.id, "approved")}
+              disabled={application.status === "approved"}
+            >
+              <CheckCircle2 className="h-4 w-4 mr-2" />
+              Approve
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
+// Updated ApplicantsList component
+const ApplicantsList = ({
+  applications,
+  onStatusChange,
+}: {
+  applications: Application[];
+  onStatusChange: (
+    id: string,
+    status: "approved" | "rejected"
+  ) => Promise<void>;
+}) => {
+  return (
+    <div className="space-y-6">
+      {applications.length > 0 ? (
+        applications.map((application) => (
+          <ApplicantDetails
+            key={application.id}
+            application={application}
+            onStatusChange={onStatusChange}
+          />
+        ))
+      ) : (
+        <div className="text-center py-12">
+          <div className="mx-auto h-24 w-24 rounded-full bg-gray-100 flex items-center justify-center mb-6">
+            <Users className="h-12 w-12 text-gray-400" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+            No applications found
+          </h3>
+          <p className="text-gray-600 max-w-md mx-auto">
+            Students who apply to your jobs will appear here.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Manage Jobs Component
 const ManageJobs = ({
   jobs,
   onDelete,
 }: {
   jobs: any[];
-  onDelete: (jobId: string) => void;
+  onDelete: (jobId: string) => Promise<void>;
 }) => {
-  console.log("Jobs received:", jobs);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const handleDelete = async (jobId: string) => {
+    setDeleting(jobId);
+    try {
+      await onDelete(jobId);
+    } catch (error) {
+      toast({
+        title: "⚠️ Error",
+        description: error.message || "Failed to delete job",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleting(null);
+    }
+  };
 
   return (
     <motion.div
@@ -782,10 +1064,15 @@ const ManageJobs = ({
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => onDelete(job.id)}
+                        onClick={() => handleDelete(job.id)}
                         className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                        disabled={deleting === job.id}
                       >
-                        <Trash2 size={18} />
+                        {deleting === job.id ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <Trash2 size={18} />
+                        )}
                       </Button>
                     </div>
                     <div className="mt-4">
@@ -833,88 +1120,175 @@ const ManageJobs = ({
   );
 };
 
+// Main Recruiter Dashboard Component
 const RecruiterJobPostPage = () => {
   const [activeTab, setActiveTab] = useState<
     "jobPosting" | "applicants" | "manageJobs"
   >("jobPosting");
-  const [students, setStudents] = useState<any[]>([]);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [applications, setApplications] = useState<any[]>([]);
   const [postedJobs, setPostedJobs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { toast } = useToast();
 
-  const [loading, setLoading] = useState(true);
-
+  // Fetch recruiter's jobs and applications
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log("User authenticated:", user.uid);
-        const q = query(
+        // Fetch recruiter's jobs
+        const jobsQuery = query(
           collection(db, "jobPosts"),
           where("recruiterId", "==", user.uid)
         );
 
-        const unsubscribeFirestore = onSnapshot(
-          q,
-          (querySnapshot) => {
-            const jobs = querySnapshot.docs.map((doc) => ({
+        const unsubscribeJobs = onSnapshot(
+          jobsQuery,
+          async (jobsSnapshot) => {
+            const jobs = jobsSnapshot.docs.map((doc) => ({
               id: doc.id,
               ...doc.data(),
+              createdAt: doc.data().createdAt?.toDate(),
+              updatedAt: doc.data().updatedAt?.toDate(),
             }));
             setPostedJobs(jobs);
-            setLoading(false);
+
+            // Then fetch applications for these jobs
+            if (jobs.length > 0) {
+              const applicationsQuery = query(
+                collection(db, "applications"),
+                where(
+                  "jobId",
+                  "in",
+                  jobs.map((job) => job.id)
+                )
+              );
+
+              const unsubscribeApps = onSnapshot(
+                applicationsQuery,
+                (appsSnapshot) => {
+                  const apps = appsSnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    appliedAt: doc.data().appliedAt?.toDate(),
+                    updatedAt: doc.data().updatedAt?.toDate(),
+                  }));
+                  setApplications(apps);
+                  setLoading(false);
+                },
+                (error) => {
+                  console.error("Error fetching applications:", error);
+                  setLoading(false);
+                }
+              );
+
+              return unsubscribeApps;
+            } else {
+              setApplications([]);
+              setLoading(false);
+            }
           },
           (error) => {
-            console.error("Firestore error:", error);
+            console.error("Error fetching jobs:", error);
             setLoading(false);
           }
         );
 
-        return unsubscribeFirestore;
+        return unsubscribeJobs;
       } else {
         setPostedJobs([]);
+        setApplications([]);
         setLoading(false);
       }
     });
 
     return () => unsubscribeAuth();
   }, []);
-  const handleDeleteJob = async (jobId: string) => {
+
+  const handleStatusChange = async (
+    applicationId: string,
+    newStatus: "approved" | "rejected"
+  ) => {
     try {
-      await deleteDoc(doc(db, "jobPosts", jobId));
+      // 1. Update the main application document
+      await updateDoc(doc(db, "applications", applicationId), {
+        status: newStatus,
+        updatedAt: serverTimestamp(),
+      });
+  
+      // 2. Find the application in local state to get jobId
+      const application = applications.find((app) => app.id === applicationId);
+      if (!application) throw new Error("Application not found");
+  
+      // 3. Update all references in job's applicants subcollection
+      const applicantsRef = collection(db, "jobPosts", application.jobId, "applicants");
+      const q = query(applicantsRef, where("applicationId", "==", applicationId));
+      const querySnapshot = await getDocs(q);
+  
+      const updatePromises = querySnapshot.docs.map((docSnapshot) =>
+        updateDoc(docSnapshot.ref, {
+          status: newStatus,
+          updatedAt: serverTimestamp(),
+        })
+      );
+  
+      await Promise.all(updatePromises);
+  
+      // 4. Update local state
+      setApplications(applications.map((app) =>
+        app.id === applicationId ? { ...app, status: newStatus } : app
+      ));
+  
       toast({
-        title: "🗑️ Job Deleted",
-        description: "The job posting has been successfully deleted.",
-        className: "bg-green-100 border-green-500 text-green-700",
+        title: `Application ${newStatus}`,
+        description: `Status updated successfully`,
+        variant: newStatus === "approved" ? "default" : "destructive",
       });
     } catch (error) {
-      console.error("Error deleting job:", error);
+      console.error("Error updating application status:", error);
       toast({
-        title: "⚠️ Error",
-        description: "Failed to delete job. Please try again.",
+        title: "Error",
+        description: "Failed to update application status",
         variant: "destructive",
       });
     }
   };
-  console.log("Current user:", auth.currentUser?.uid);
-  console.log("Posted jobs state:", postedJobs);
-  const handleApprove = (studentId: number) => {
-    const student = students.find((s) => s.id === studentId);
-    setStudents(students.filter((student) => student.id !== studentId));
-    toast({
-      title: "✅ Application Approved",
-      description: `${student?.firstName} ${student?.lastName} has been approved.`,
-      className: "bg-green-100 border-green-500 text-green-700",
-    });
-  };
 
-  const handleReject = (studentId: number) => {
-    const student = students.find((s) => s.id === studentId);
-    setStudents(students.filter((student) => student.id !== studentId));
-    toast({
-      title: "❌ Application Rejected",
-      description: `${student?.firstName} ${student?.lastName} has been rejected.`,
-      variant: "destructive",
-    });
+  const handleDeleteJob = async (jobId: string) => {
+    try {
+      // First delete all applications for this job
+      const applicationsQuery = query(
+        collection(db, "applications"),
+        where("jobId", "==", jobId)
+      );
+      const applicationsSnapshot = await getDocs(applicationsQuery);
+
+      const deletePromises = applicationsSnapshot.docs.map((doc) =>
+        deleteDoc(doc.ref)
+      );
+
+      // Also delete from job's applicants subcollection
+      const applicantsRef = collection(db, "jobPosts", jobId, "applicants");
+      const applicantsSnapshot = await getDocs(applicantsRef);
+
+      applicantsSnapshot.docs.forEach((doc) => {
+        deletePromises.push(deleteDoc(doc.ref));
+      });
+
+      await Promise.all(deletePromises);
+
+      // Then delete the job itself
+      await deleteDoc(doc(db, "jobPosts", jobId));
+
+      toast({
+        title: "🗑️ Job Deleted",
+        description:
+          "The job posting and all related applications have been deleted.",
+        className: "bg-green-100 border-green-500 text-green-700",
+      });
+    } catch (error) {
+      console.error("Error deleting job:", error);
+      throw new Error("Failed to delete job");
+    }
   };
 
   const handleTabChange = (tab: "jobPosting" | "applicants" | "manageJobs") => {
@@ -1040,48 +1414,27 @@ const RecruiterJobPostPage = () => {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <AnimatePresence mode="wait">
-          {activeTab === "jobPosting" ? (
-            <JobPostForm />
-          ) : activeTab === "applicants" ? (
-            <ApplicantsList
-              students={students}
-              onApprove={handleApprove}
-              onReject={handleReject}
-            />
-          ) : (
-            <ManageJobs jobs={postedJobs} onDelete={handleDeleteJob} />
-          )}
-        </AnimatePresence>
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            {activeTab === "jobPosting" ? (
+              <JobPostForm />
+            ) : activeTab === "applicants" ? (
+              <ApplicantsList
+                applications={applications}
+                onStatusChange={handleStatusChange}
+              />
+            ) : (
+              <ManageJobs jobs={postedJobs} onDelete={handleDeleteJob} />
+            )}
+          </AnimatePresence>
+        )}
       </main>
     </div>
   );
 };
 
 export default RecruiterJobPostPage;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

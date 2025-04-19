@@ -178,15 +178,13 @@ const LoginForm = ({
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="remember"
-                checked={rememberMe}
-                onCheckedChange={(checked) => setRememberMe(!!checked)}
-              />
-              <Label htmlFor="remember">Remember me</Label>
-            </div>
+          <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-100 shadow-sm">
+            <p className="text-sm text-indigo-700">
+              <strong>Important Note:</strong> If you accidentally select the
+              wrong role, don’t worry. Our smart and secure system will
+              automatically detect your actual account type based on your email
+              ID and redirect you to the correct page.
+            </p>
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>
@@ -213,9 +211,7 @@ const Login = () => {
   const { toast } = useToast();
   const { login } = useAuth();
 
-  const handleRoleSelect = (
-    role: "student" | "recruiter" | "admin" | null
-  ) => {
+  const handleRoleSelect = (role: "student" | "recruiter" | "admin" | null) => {
     setSelectedRole(role);
   };
   const handleLoginSuccess = async (email: string, password: string) => {

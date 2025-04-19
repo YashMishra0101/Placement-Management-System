@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { MenuIcon, XIcon } from "lucide-react";
 import logo from "../images/logo1.png";
+import { useAuth } from "@/context/AuthContext"; // Import the auth context
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { currentUser, logout } = useAuth(); // Get auth state and logout function
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -32,6 +35,12 @@ const Navbar = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  const handleLogout = () => {
+    logout(); // Call the logout function from auth context
+    navigate("/"); // Redirect to home after logout
+    setIsOpen(false); // Close mobile menu if open
+  };
 
   return (
     <nav
@@ -77,24 +86,26 @@ const Navbar = () => {
               ))}
             </div>
             <div className="ml-4 flex items-center md:ml-6">
-              <Link to="/login">
+              {!currentUser ? (
+                <Link to="/login">
+                  <Button
+                    className={`mr-2 transition-all ${
+                      location.pathname === "/login"
+                        ? "bg-indigo-600 text-white"
+                        : "bg-white text-indigo-600"
+                    }`}
+                  >
+                    Login
+                  </Button>
+                </Link>
+              ) : (
                 <Button
-                  className={`mr-2 transition-all ${
-                    location.pathname === "/login"
-                      ? "  bg-indigo-600 text-white"
-                      : "bg-white text-indigo-600 "
-                  }`}
-                >
-                  Login
-                </Button>
-              </Link>
-              <Link to="/logout">
-                <Button
+                  onClick={handleLogout}
                   className="border border-red-600 text-red-600 bg-white hover:bg-red-500 hover:text-white transition-all"
                 >
                   Logout
                 </Button>
-              </Link>
+              )}
             </div>
           </div>
 
@@ -139,24 +150,26 @@ const Navbar = () => {
             </a>
           ))}
           <div className="pt-4 flex flex-col space-y-2">
-            <Link to="/login" onClick={() => setIsOpen(false)}>
+            {!currentUser ? (
+              <Link to="/login" onClick={() => setIsOpen(false)}>
+                <Button
+                  className={`w-full transition-all ${
+                    location.pathname === "/login"
+                      ? "bg-indigo-600 text-white"
+                      : "bg-white text-indigo-600"
+                  }`}
+                >
+                  Login
+                </Button>
+              </Link>
+            ) : (
               <Button
-                className={`w-full transition-all ${
-                  location.pathname === "/login"
-                    ? "  bg-indigo-600 text-white"
-                    : "bg-white text-indigo-600 "
-                }`}
-              >
-                Login
-              </Button>
-            </Link>
-            <Link to="/logout" onClick={() => setIsOpen(false)}>
-              <Button
+                onClick={handleLogout}
                 className="w-full border border-red-600 text-red-600 bg-white hover:bg-red-500 hover:text-white transition-all"
               >
                 Logout
               </Button>
-            </Link>
+            )}
           </div>
         </div>
       </div>
