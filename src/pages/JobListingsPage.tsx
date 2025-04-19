@@ -10,7 +10,7 @@ import {
   AlertCircle,
   Clock as PendingIcon,
 } from "lucide-react";
-import { useState, useEffect ,useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +19,7 @@ import { TypeAnimation } from "react-type-animation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/landing/Footer";
 import { useAuth } from "@/context/AuthContext";
-import { toast } from 'sonner'; // Add this import at the top of your file
+import { toast } from "sonner"; // Add this import at the top of your file
 
 import {
   collection,
@@ -239,111 +239,115 @@ const JobListingsPage = () => {
     setShowApplicationForm(jobId);
   };
 
-  
-const handleSubmitApplication = async (jobId: string) => {
-  // Show loading toast
-  const toastId = toast.loading('Submitting your application...', {
-    description: 'Please wait while we process your application'
-  });
+  const handleSubmitApplication = async (jobId: string) => {
+    // Show loading toast
+    const toastId = toast.loading("Submitting your application...", {
+      description: "Please wait while we process your application",
+    });
 
-  try {
-    const user = auth.currentUser;
-    if (!user) {
-      toast.error('Authentication required', {
-        description: 'Please sign in to apply for jobs'
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        toast.error("Authentication required", {
+          description: "Please sign in to apply for jobs",
+        });
+        throw new Error("Not authenticated");
+      }
+
+      const job = jobs.find((j) => j.id === jobId);
+      if (!job) {
+        toast.error("Job not found", {
+          description: "The job you are trying to apply for does not exist",
+        });
+        throw new Error("Job not found");
+      }
+
+      // Create a clean student profile object
+      const cleanStudentProfile = {
+        firstName: studentProfile?.firstName,
+        lastName: studentProfile?.lastName,
+        middleName: studentProfile?.middleName,
+        email: studentProfile?.email,
+        phone: studentProfile?.phone,
+        gender: studentProfile?.gender,
+        dob: studentProfile?.dob,
+        tenthPercentage: studentProfile?.tenthPercentage,
+        twelfthPercentage: studentProfile?.twelfthPercentage,
+        cgpa: studentProfile?.cgpa,
+        branch: studentProfile?.branch,
+        semester: studentProfile?.semester,
+        backlogs: studentProfile?.backlogs,
+      };
+
+      const applicationData = {
+        jobId,
+        jobTitle: job.jobTitle,
+        companyName: job.companyName,
+        studentId: user.uid,
+        studentName: `${studentProfile?.firstName} ${studentProfile?.lastName}`,
+        studentEmail: studentProfile?.email,
+        status: "pending",
+        appliedAt: serverTimestamp(),
+        internshipCount,
+        internshipMonths,
+        hasProjects,
+        projects: hasProjects === "Yes" ? projects : [],
+        studentProfile: cleanStudentProfile,
+      };
+
+      // Add to applications collection
+      const applicationRef = await addDoc(
+        collection(db, "applications"),
+        applicationData
+      );
+
+      // Add to job's applicants subcollection
+      await addDoc(collection(db, "jobPosts", jobId, "applicants"), {
+        studentId: user.uid,
+        applicationId: applicationRef.id,
+        status: "pending",
+        appliedAt: serverTimestamp(),
       });
-      throw new Error("Not authenticated");
-    }
 
-    const job = jobs.find((j) => j.id === jobId);
-    if (!job) {
-      toast.error('Job not found', {
-        description: 'The job you are trying to apply for does not exist'
+      // Update toast to success
+      toast.success("Application submitted successfully!", {
+        id: toastId,
+        description: `You've applied for ${job.jobTitle} at ${job.companyName}`,
+        action: {
+          label: "View Applications",
+          onClick: () => setActiveTab("applied"),
+        },
+        duration: 10000, // Show for 10 seconds
       });
-      throw new Error("Job not found");
+
+      setShowApplicationForm(null);
+      // Reset form fields
+      setInternshipCount("0");
+      setInternshipMonths("0");
+      setHasProjects("No");
+      setProjects([
+        { link: "", description: "" },
+        { link: "", description: "" },
+        { link: "", description: "" },
+      ]);
+    } catch (error) {
+      console.error("Error submitting application:", error);
+
+      // Update toast to error
+      toast.error("Failed to submit application", {
+        id: toastId,
+        description:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+        action: {
+          label: "Try Again",
+          onClick: () => handleSubmitApplication(jobId),
+        },
+        duration: 10000,
+      });
     }
-
-    // Create a clean student profile object
-    const cleanStudentProfile = {
-      firstName: studentProfile?.firstName,
-      lastName: studentProfile?.lastName,
-      middleName: studentProfile?.middleName,
-      email: studentProfile?.email,
-      phone: studentProfile?.phone,
-      gender: studentProfile?.gender,
-      dob: studentProfile?.dob,
-      tenthPercentage: studentProfile?.tenthPercentage,
-      twelfthPercentage: studentProfile?.twelfthPercentage,
-      cgpa: studentProfile?.cgpa,
-      branch: studentProfile?.branch,
-      semester: studentProfile?.semester,
-      backlogs: studentProfile?.backlogs,
-    };
-
-    const applicationData = {
-      jobId,
-      jobTitle: job.jobTitle,
-      companyName: job.companyName,
-      studentId: user.uid,
-      studentName: `${studentProfile?.firstName} ${studentProfile?.lastName}`,
-      studentEmail: studentProfile?.email,
-      status: "pending",
-      appliedAt: serverTimestamp(),
-      internshipCount,
-      internshipMonths,
-      hasProjects,
-      projects: hasProjects === "Yes" ? projects : [],
-      studentProfile: cleanStudentProfile,
-    };
-
-    // Add to applications collection
-    const applicationRef = await addDoc(collection(db, "applications"), applicationData);
-
-    // Add to job's applicants subcollection
-    await addDoc(collection(db, "jobPosts", jobId, "applicants"), {
-      studentId: user.uid,
-      applicationId: applicationRef.id,
-      status: "pending",
-      appliedAt: serverTimestamp(),
-    });
-
-    // Update toast to success
-    toast.success('Application submitted successfully!', {
-      id: toastId,
-      description: `You've applied for ${job.jobTitle} at ${job.companyName}`,
-      action: {
-        label: 'View Applications',
-        onClick: () => setActiveTab('applied')
-      },
-      duration: 10000 // Show for 10 seconds
-    });
-
-    setShowApplicationForm(null);
-    // Reset form fields
-    setInternshipCount("0");
-    setInternshipMonths("0");
-    setHasProjects("No");
-    setProjects([
-      { link: "", description: "" },
-      { link: "", description: "" },
-      { link: "", description: "" },
-    ]);
-
-  } catch (error) {
-    console.error("Error submitting application:", error);
-    
-    // Update toast to error
-    toast.error('Failed to submit application', {
-      id: toastId,
-      description: error instanceof Error ? error.message : 'An unexpected error occurred',
-      action: {
-        label: 'Try Again',
-        onClick: () => handleSubmitApplication(jobId)
-      },
-      duration: 10000
-    });
-  }
-};
+  };
 
   const toggleExpand = (jobId: string) => {
     setExpandedJob(expandedJob === jobId ? null : jobId);
@@ -357,7 +361,7 @@ const handleSubmitApplication = async (jobId: string) => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "approved":  // Changed from "selected" to "approved"
+      case "approved": // Changed from "selected" to "approved"
         return (
           <Badge className="bg-green-100 text-green-800 text-xs sm:text-sm">
             <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
@@ -383,18 +387,18 @@ const handleSubmitApplication = async (jobId: string) => {
 
   const getStatusMessage = (status: string) => {
     switch (status) {
-      case "selected":
+      case "approved": // Changed from "selected" to match your status
         return (
-          <div className="bg-green-50 p-3 rounded-lg border border-green-100 mt-3">
+          <div className="bg-green-50 p-3 rounded-lg border border-green-100 mb-4">
             <p className="text-green-700 text-sm">
-              You have been selected! The recruiter will contact you via your
+              ✅ You have been selected! The recruiter will contact you via your
               email ID or registered phone number.
             </p>
           </div>
         );
       case "rejected":
         return (
-          <div className="bg-red-50 p-3 rounded-lg border border-red-100 mt-3">
+          <div className="bg-red-50 p-3 rounded-lg border border-red-100 mb-4">
             <p className="text-red-700 text-sm">
               ❌ You have not been selected for this position.
             </p>
@@ -402,7 +406,7 @@ const handleSubmitApplication = async (jobId: string) => {
         );
       default:
         return (
-          <div className="bg-blue-50 p-3 rounded-lg border border-blue-100 mt-3">
+          <div className="bg-blue-50 p-3 rounded-lg border border-blue-100 mb-4">
             <p className="text-blue-700 text-sm">
               🕐 Your application is pending review by the recruiter.
             </p>
@@ -410,18 +414,17 @@ const handleSubmitApplication = async (jobId: string) => {
         );
     }
   };
-
   const availableJobs = jobs.filter(
     (job) => !applications.some((app) => app.jobId === job.id)
   );
   const appliedJobs = useMemo(() => {
     return applications.map((app) => {
       const job = jobs.find((j) => j.id === app.jobId);
-      return { 
-        ...app, 
+      return {
+        ...app,
         ...job,
         // Ensure status comes from the application, not the job
-        status: app.status 
+        status: app.status,
       };
     });
   }, [applications, jobs]);
@@ -860,6 +863,9 @@ const handleSubmitApplication = async (jobId: string) => {
                     className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
                   >
                     <div className="p-4 sm:p-6">
+                      {/* Status message at the top */}
+                      {getStatusMessage(application.status)}
+
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
                         <div>
                           <h3 className="text-lg sm:text-xl font-semibold text-gray-800">
@@ -891,6 +897,7 @@ const handleSubmitApplication = async (jobId: string) => {
                         </div>
                       </div>
 
+                      {/* Job details */}
                       <div className="mt-3 sm:mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 text-xs sm:text-sm">
                         <div className="flex items-center text-gray-700">
                           <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 text-indigo-500" />
@@ -911,6 +918,7 @@ const handleSubmitApplication = async (jobId: string) => {
                         </div>
                       </div>
 
+                      {/* Expanded details */}
                       <AnimatePresence>
                         {expandedJob === application.jobId && (
                           <motion.div
@@ -921,8 +929,6 @@ const handleSubmitApplication = async (jobId: string) => {
                             className="mt-4 sm:mt-6"
                           >
                             <div className="border-t border-gray-200 pt-4 sm:pt-6">
-                              {getStatusMessage(application.status)}
-
                               <div className="bg-gray-50 p-3 sm:p-4 rounded-lg mb-4 sm:mb-6">
                                 <h4 className="font-medium text-sm sm:text-base text-gray-800 mb-2 flex items-center">
                                   <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-500" />
