@@ -16,7 +16,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <Link to="/" className="flex items-center mb-4">
-              <span className="text-2xl font-bold text-primary">GCA</span>
+              <span className="text-2xl font-bold text-primary">GCOEA</span>
               <span className="text-2xl font-bold text-white ml-1">
                 Placements
               </span>
@@ -92,14 +92,7 @@ const Footer = () => {
                   Login
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/signup"
-                  className="text-gray-400 hover:text-primary transition-colors"
-                >
-                  Sign Up
-                </Link>
-              </li>
+              
             </ul>
           </div>
 
@@ -116,10 +109,10 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/signup"
+                  to="/login"
                   className="text-gray-400 hover:text-primary transition-colors"
                 >
-                  Register as Student
+                  Recruiters Login
                 </Link>
               </li>
               <li>
@@ -147,7 +140,8 @@ const Footer = () => {
               <li className="flex items-start">
                 <MapPin className="mr-2 h-5 w-5 text-primary shrink-0 mt-0.5" />
                 <span className="text-gray-400">
-                  Government College of Amravati, Maharashtra, India - 444601
+                  Government of Engineering College Amravati, Maharashtra, India
+                  - 444601
                 </span>
               </li>
               <li className="flex items-center">
@@ -169,12 +163,12 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-500 text-sm mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} Government College Amravati
-            Placement Portal. All rights reserved.
+            &copy; {new Date().getFullYear()} Government of Engineering College
+            Amravati Placement Portal. All rights reserved.
           </p>
-          <p className="text-gray-500 text-sm">
+          {/* <p className="text-gray-500 text-sm">
             Developed with ❤️ by Yash Mishra
-          </p>
+          </p> */}
         </div>
       </div>
     </footer>
