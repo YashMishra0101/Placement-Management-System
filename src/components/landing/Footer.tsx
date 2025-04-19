@@ -140,7 +140,7 @@ const Footer = () => {
               <li className="flex items-start">
                 <MapPin className="mr-2 h-5 w-5 text-primary shrink-0 mt-0.5" />
                 <span className="text-gray-400">
-                  Government of Engineering College Amravati, Maharashtra, India
+                Government College Of Engineering Amravati, Maharashtra, India
                   - 444601
                 </span>
               </li>
