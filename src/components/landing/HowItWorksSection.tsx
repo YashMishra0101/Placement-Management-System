@@ -1,43 +1,43 @@
 
+
 import {
-  UserPlus,
-  ClipboardCheck,
-  CheckCircle,
+  ClipboardList,
+  UserCheck,
   Briefcase,
+  Headphones,
 } from "lucide-react";
+
 
 const steps = [
   {
-    title: "Sign Up",
-    description:
-      "Create your account as a student or recruiter. Fill in your details and submit for approval.",
-    icon: UserPlus,
+    title: "Request Account",
+    description:"Students or recruiters can initiate access by submitting their details through our contact form or via email.",
+    icon: ClipboardList,
     color: "bg-blue-100 text-blue-600",
-    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80"
-  },
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80"  },
   {
-    title: "Get Approved",
+    title: "Admin Approval",
     description:
-      "Admin reviews your details and approves your account, giving you full access to the platform.",
-    icon: CheckCircle,
+      "GCOEA placement cell verifies credentials and activates account",
+    icon: UserCheck,
     color: "bg-green-100 text-green-600",
-    image: "https://images.unsplash.com/photo-1554774853-aae0a22c8aa4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80"
+    image: "https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1738&q=80"
   },
   {
-    title: "Apply or Post Jobs",
+    title: "Platform Access",
     description:
-      "Students can apply for jobs, companies can post new openings. The platform matches eligible candidates.",
+      "Students apply to jobs, recruiters manage postings through dashboard",
     icon: Briefcase,
     color: "bg-purple-100 text-purple-600",
-    image: "https://images.unsplash.com/photo-1573497620053-ea5300f94f21?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80"
+    image: "https://images.unsplash.com/photo-1556745757-8d76bdb6984b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1732&q=80"
   },
   {
-    title: "Track Progress",
+    title: "24/7 Support",
     description:
-      "Monitor application status, manage interviews, and track placement results all in one place.",
-    icon: ClipboardCheck,
+      "Direct access to placement cell for any queries through multiple channels",
+    icon: Headphones,
     color: "bg-orange-100 text-orange-600",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80"
+    image: "https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80"
   },
 ];
 
@@ -47,12 +47,11 @@ const HowItWorksSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            How It Works
+            Placement Platform Process
           </h2>
-          <div className="w-24 h-1.5 bg-gradient-to-r from-primary to-secondary mx-auto mb-6"></div>
+          <div className="w-24 h-1.5 bg-gradient-to-r from-indigo-500 to-purple-600 mx-auto mb-6"></div>
           <p className="text-xl text-gray-600">
-            Our simple 4-step process makes placement management easy for
-            everyone involved.
+            Simple steps to connect students with career opportunities
           </p>
         </div>
 
@@ -71,6 +70,7 @@ const HowItWorksSection = () => {
                           src={step.image} 
                           alt={step.title}
                           className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+                          loading="lazy"
                         />
                       </div>
                     </div>
@@ -95,6 +95,8 @@ const HowItWorksSection = () => {
             </div>
           ))}
         </div>
+
+        
       </div>
     </section>
   );
