@@ -1,73 +1,65 @@
-# Welcome to your Lovable project
+# 🎓 Placement-Management-System
 
-## Project info
+**Placement-Management-System** is a fully functional web application designed to streamline the campus placement process. Built using **React**, **TypeScript**, **Firebase**, **Tailwind CSS**, and **Framer Motion**, it ensures smooth interaction between **students**, **recruiters**, and **admins**—with robust role-based access and approval logic.
 
-**URL**: https://lovable.dev/projects/b2e7055f-28e5-42e8-be2a-43b47477ba5f
+---
 
-## How can I edit this code?
+## 👨‍💻 Features
 
-There are several ways of editing your application.
+* 👨‍🎓 **Student Module**
 
-**Use Lovable**
+  * Students can **log in** and **apply for job postings** after their accounts are created and approved **by the admin**.
+  * Students **cannot self-register**—only admins can create their accounts.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/b2e7055f-28e5-42e8-be2a-43b47477ba5f) and start prompting.
+* 🧑‍💼 **Recruiter Module**
 
-Changes made via Lovable will be committed automatically to this repo.
+  * Recruiters can post jobs for students once their accounts are **created by the admin**.
+  * Recruiters **cannot create their own accounts**—admin approval and creation is required.
 
-**Use your preferred IDE**
+* 🛡️ **Admin Module**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+  * Full access to the system.
+  * **Only the admin can create new student and recruiter accounts.**
+  * Can **ban**, **delete**, or **manage** any user.
+  * Controls the overall platform integrity and security.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## 🧰 Technologies Used
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+* ⚛️ React (with TypeScript) – Scalable, typed frontend framework
+* 🔥 Firebase – Authentication, database, and hosting
+* 🎨 Tailwind CSS – For beautiful and responsive UI
+* 💫 Framer Motion – For smooth animations and transitions
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+---
 
-# Step 3: Install the necessary dependencies.
-npm i
+## 🌐 Project Demo 
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+To see a live demo of the project, please visit :https://placement-management-system-five.vercel.app/
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🔐 Access Control Logic
 
-**Use GitHub Codespaces**
+| Role      | Permission                                              |
+| --------- | ------------------------------------------------------- |
+| Student   | Login, view/apply jobs (after admin creates account)    |
+| Recruiter | Post/manage jobs (after admin creates account)          |
+| Admin     | Full control: **create accounts**, approve, delete, ban |
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## 🤝 Contributing
 
-This project is built with:
+Wanna improve this system or fix a bug? Feel free to open an issue or submit a pull request. Contributions are welcome and appreciated! 💙
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## 📬 Contact
 
-Simply open [Lovable](https://lovable.dev/projects/b2e7055f-28e5-42e8-be2a-43b47477ba5f) and click on Share -> Publish.
+For queries, suggestions, or just to say hi:
 
-## Can I connect a custom domain to my Lovable project?
+* 🔗 LinkedIn: [Yash Mishra](https://www.linkedin.com/in/yash-mishra-356280223)
+* 🐦 Twitter: [@YashRKMishra1](https://twitter.com/YashRKMishra1)
 
-Yes it is!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
