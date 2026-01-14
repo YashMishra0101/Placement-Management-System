@@ -3,7 +3,7 @@
 Placement-Management-System is a fully functional web application designed to streamline the campus placement process. Built using **React**, **TypeScript**, **Firebase**, **Tailwind CSS**, and **Framer Motion**, it ensures smooth interaction between **students**, **recruiters**, and **admins**—with robust role-based access and approval logic.
 
 ### Project Note
-This project is part of one of my freelance projects for a final-year B.Tech student and was built using React, Tailwind CSS, and Firebase.
+This project is part of one of my freelance projects for a final-year B.Tech student and was built using Tailwind CSS, React.js, Typescript and Firebase.
 
 ---
 
