@@ -1,9 +1,6 @@
 # 🎓 Placement-Management-System
 
 Placement-Management-System** is a fully functional web application designed to streamline the campus placement process. Built using **React**, **TypeScript**, **Firebase**, **Tailwind CSS**, and **Framer Motion**, it ensures smooth interaction between **students**, **recruiters**, and **admins**—with robust role-based access and approval logic.
-### Note
-
-This repository was created as a college-level learning project to practice and demonstrate core web development concepts. The code, designs, documentation, and related materials are shared for learning and reference purposes only.
 
 ---
 
