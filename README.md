@@ -1,6 +1,9 @@
 # 🎓 Placement-Management-System
 
-Placement-Management-System** is a fully functional web application designed to streamline the campus placement process. Built using **React**, **TypeScript**, **Firebase**, **Tailwind CSS**, and **Framer Motion**, it ensures smooth interaction between **students**, **recruiters**, and **admins**—with robust role-based access and approval logic.
+Placement-Management-System is a fully functional web application designed to streamline the campus placement process. Built using **React**, **TypeScript**, **Firebase**, **Tailwind CSS**, and **Framer Motion**, it ensures smooth interaction between **students**, **recruiters**, and **admins**—with robust role-based access and approval logic.
+
+### Project Note
+This project is part of one of my freelance projects for a final-year B.Tech student and was built using React, Tailwind CSS, and Firebase.
 
 ---
 
@@ -36,7 +39,7 @@ Placement-Management-System** is a fully functional web application designed to 
 
 ## 🌐 Project Demo 
 
-To see a live demo of the project, please visit :https://placement-management-system-five.vercel.app/
+To see a live demo of the project, please visit : https://placement-management-system-five.vercel.app/
 
 ---
 
