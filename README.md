@@ -37,12 +37,6 @@ This project is part of one of my freelance projects for a final-year B.Tech stu
 
 ---
 
-## 🌐 Project Demo 
-
-To see a live demo of the project, please visit : https://placement-management-system-five.vercel.app/
-
----
-
 ## 🔐 Access Control Logic
 
 | Role      | Permission                                              |
