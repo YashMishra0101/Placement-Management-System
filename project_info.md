@@ -10,7 +10,6 @@ This document provides a real, accurate, and comprehensive overview of the Place
 - **React (v19)**: The core UI library used for building the component-based architecture.
 - **TypeScript**: Used throughout the project to provide static typing and improve code reliability.
 - **Vite**: The blazing-fast build tool and development server powering the project.
-- **pnpm**: The fast, disk-space efficient package manager used for handling project dependencies.
 - **React Router DOM (v7)**: Handles client-side routing, enabling navigation without page reloads.
 
 ### Styling & UI

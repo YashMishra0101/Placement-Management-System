@@ -19,7 +19,7 @@ To run this project locally, follow these steps:
 Clone the repository, navigate into the directory, and install the required packages:
 
 ```bash
-pnpm install
+npm install
 ```
 
 ### 2. Setup Firebase Environment Variables
@@ -68,7 +68,7 @@ Follow these steps exactly:
 Start the Vite development server:
 
 ```bash
-pnpm run dev
+npm run dev
 ```
 
 ---
