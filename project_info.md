@@ -82,28 +82,3 @@ Security is enforced on the frontend via the `ProtectedRoute.tsx` component. Thi
 ### 🎨 Modern User Experience
 * **Context-Aware Navigation**: The application features a dynamic navigation bar that adapts to the authenticated user. For instance, administrative options are exclusively visible to admins, ensuring an uncluttered interface for students and recruiters.
 * **Premium Aesthetic Design**: The platform utilizes modern web design principles like "Glassmorphism" (frosted-glass UI components), fluid page transitions, and subtle interactive backgrounds. This ensures the application feels professional, responsive, and engaging to use.
-
----
-
-## 📂 Folder Structure
-
-A quick breakdown of the core project structure, specifically focusing on the frontend architecture inside the `src` directory:
-
-```text
-src/
-├── backend/          # Firebase configuration (FirebaseConfig.ts) and Auth logic (AuthService.ts)
-├── components/       # Reusable UI components (Navbar, ProtectedRoute, and UI primitives)
-├── context/          # React Context providers (AuthContext.tsx for global user state)
-├── hooks/            # Custom React hooks (e.g., use-toast.ts for notifications)
-├── images/           # Static assets like logos and graphical elements
-├── lib/              # Utility functions (e.g., utils.ts for Tailwind merge)
-├── pages/            # Core route components:
-│   ├── Login.tsx            # The central login portal
-│   ├── AdminDashboard.tsx   # The administrative control panel
-│   ├── JobListingsPage.tsx  # The student job portal
-│   ├── RecruiterJobPost.tsx # The employer dashboard
-│   └── Unauthorized.tsx     # Security interception page
-├── App.tsx           # Main application routing logic and ProtectedRoute wrapping
-├── main.tsx          # React application entry point (DOM rendering)
-└── index.css         # Global styling directives and Tailwind v4 configuration
-```

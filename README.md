@@ -30,7 +30,7 @@ You must manually create a file named exactly `.env` in the root folder of this 
 VITE_Firebase_API_KEY="your-real-firebase-api-key-goes-here"
 ```
 
-*(Note: You must also open `src/backend/FirebaseConfig.ts` and replace the placeholder values for `authDomain`, `projectId`, `storageBucket`, `messagingSenderId`, and `appId` with your own Firebase project settings!)*
+_(Note: You must also open `src/backend/FirebaseConfig.ts` and replace the placeholder values for `authDomain`, `projectId`, `storageBucket`, `messagingSenderId`, and `appId` with your own Firebase project settings!)_
 
 ```typescript
 const firebaseConfig = {
@@ -39,7 +39,7 @@ const firebaseConfig = {
   projectId: "your-project-id",
   storageBucket: "your-project-id.firebasestorage.app",
   messagingSenderId: "123456789012",
-  appId: "1:123456789012:web:abcdef1234567890"
+  appId: "1:123456789012:web:abcdef1234567890",
 };
 ```
 
